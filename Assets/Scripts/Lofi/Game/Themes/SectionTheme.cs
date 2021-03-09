@@ -27,6 +27,8 @@ public class SectionTheme : ScriptableObject
 
     public int doorWidth = 3;
     public int doorHeight = 3;
+    public int maxSectionSize = int.MaxValue;
+
 
     public Dictionary<byte, Rect> tilingZones;
 
@@ -36,11 +38,12 @@ public class SectionTheme : ScriptableObject
 
     }
 
-    public void Initialize(string themeName = "Forest", string tileFileName = "ForestDefault")
+    public void Initialize(string themeName = "Forest", string tileFileName = "ForestDefault", int maxSectSize = int.MaxValue)
     {
         if (mapTilePrefab == null)
             mapTilePrefab = (GameObject)Resources.Load("prefabs/GameMapTile", typeof(GameObject));
 
+        this.maxSectionSize = maxSectSize;
         ThemeName = themeName;
         SpriteDirectory = "Sprites/Themes";
         DefaultTileFile = tileFileName;
@@ -135,12 +138,18 @@ public class SectionTheme : ScriptableObject
         {
             if((section.Section.TileID & zone.Key) == 0)
             {
-                fillClosedEdges = (MapFactory.RandomGenerator.Next(0, 1) == 0);
+                //fillClosedEdges = (MapFactory.RandomGenerator.Next(0, 1) == 0);
                 for (int y = Mathf.RoundToInt(zone.Value.y); y < Mathf.RoundToInt(zone.Value.y + zone.Value.height); y++)
                 {
                     for (int x = Mathf.RoundToInt(zone.Value.x); x < Mathf.RoundToInt(zone.Value.x + zone.Value.width); x++)
                     {
-                        if (fillClosedEdges || (x == 0 || x == section.Width - 1 || y == 0 || y == section.Height - 1))
+                        if (fillClosedEdges || (x == 0 || x == section.Width - 1 || y == 0 || y == section.Height - 1)
+                            || (x == 1 || x == section.Width - 2 || y == 1 || y == section.Height - 2)
+                            || (x == 2 && y == 2) 
+                            || (x == 2 && y == section.Height - 3) 
+                            || (x == section.Width - 3 && y == 2) 
+                            || (x == section.Width - 3 && y == section.Height - 3) 
+                            )
                         {
                             GameObject tile = section.GetTile(x, y);
 

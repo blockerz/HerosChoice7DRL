@@ -12,9 +12,9 @@ public class GameMap : MonoBehaviour
     public int TileWidth { get; set; }
     public int TileHeight { get; set; }
 
-    List<SectionTheme> themes;
     GameMapSection[,] mapSections;
-    GameObject mapSectionPrefab; 
+    GameObject mapSectionPrefab;
+    GameMapThemes themes;
 
     private void Awake()
     {
@@ -22,20 +22,9 @@ public class GameMap : MonoBehaviour
         TileWidth = 17;
         TileHeight = 11;
 
-        CreateThemes();
+        themes = new GameMapThemes();
+        themes.CreateThemes();
 
-    }
-
-    public void CreateThemes()
-    {
-        themes = new List<SectionTheme>();
-        SectionTheme theme = new DesertTheme();
-        theme.Initialize("Desert", "DesertDefault");
-        themes.Add(theme);
-
-        theme = new ForestTheme();
-        theme.Initialize("Forest", "ForestDefault");
-        themes.Add(theme);
     }
 
     public void CreateMap(Map map)
@@ -52,18 +41,11 @@ public class GameMap : MonoBehaviour
             {
                 GameMapSection mapSection = mapSections[x, y] = Instantiate(mapSectionPrefab, this.transform).GetComponent<GameMapSection>();
                 mapSection.Section = map.GetSection(x, y);
-                mapSection.Initialize(TileWidth, TileHeight, GetThemeForRegion(mapSection.Section.RegionID));
+                mapSection.Initialize(TileWidth, TileHeight, themes.GetThemeForRegion(mapSection.Section));
                 mapSection.name = "Section: " + x + ", " + y;
                 mapSection.transform.position = new Vector3(x * TileWidth, y * TileHeight, 0);
             }
         }
-    }
-
-    public SectionTheme GetThemeForRegion(int region)
-    {
-        if (region <= 3)
-            return themes[0];
-        return themes[1];
     }
 
     // Start is called before the first frame update

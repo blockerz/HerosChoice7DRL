@@ -31,9 +31,10 @@ public class GameMapSection : MonoBehaviour
         Theme = theme;
 
         activator.offset = new Vector2(width/2f, height/2f);
-        activator.size = new Vector2(width, height);
+        activator.size = new Vector2(width - 1, height - 1);
         background.sprite = theme.GetBackgroundSprite();
         background.transform.localScale = new Vector3(width, height, 0);
+        //background.transform.position = new Vector3(0, 0, 0);
 
         tiles = new GameObject[width, height];
         theme.FillSectionTiles(this);
@@ -66,6 +67,21 @@ public class GameMapSection : MonoBehaviour
 
     // Update is called once per frame
     void Update()
+    {
+        
+    }
+
+    internal void Deactivate()
+    {
+        activator.GetComponent<SectionActivator>().playerPresent = false;
+    }
+
+    internal void Activate()
+    {
+        GenerateMonsters();
+    }
+
+    private void GenerateMonsters()
     {
         
     }

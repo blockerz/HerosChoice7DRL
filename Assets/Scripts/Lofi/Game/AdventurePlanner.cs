@@ -15,7 +15,7 @@ namespace Lofi.Game
             Map overworldMap;
             //map = MapFactory.GenerateMap(5, 4, 3, 1, true);
             //MapFactory.RandomGenerator = new DotNetRandom(408483593); // used to resolve region border issues
-            MapFactory.RandomGenerator = new DotNetRandom(421535328); // single connection region
+            //MapFactory.RandomGenerator = new DotNetRandom(421535328); // single connection region
             Debug.Log("Seed: " + MapFactory.RandomGenerator.Save().Seed[0]);
             overworldMap = MapFactory.GenerateMap(16, 12, 3, 3);
             //overworldMap = MapFactory.GenerateMap(5, 4, 3, 1, true);
