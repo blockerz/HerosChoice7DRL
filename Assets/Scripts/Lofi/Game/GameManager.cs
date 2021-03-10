@@ -12,10 +12,14 @@ namespace Lofi.Game
         public static GameManager instance = null;
         
         private SceneManager sceneManager;
+        private List<Enemy> enemies;
+        private float turnDelay = 0.3f;
 
         public static IRandom Random { get; private set; }
         Map overWorld;
         internal bool playersTurn = true;
+        internal bool enemiesTurn = false;
+        internal bool initializing = true;
 
         public GameMapSection ActiveSection;
         public GameMapSection LastSection;
@@ -30,20 +34,29 @@ namespace Lofi.Game
             DontDestroyOnLoad(gameObject);
 
             sceneManager = GetComponentInChildren<SceneManager>();
-        
+
+            enemies = new List<Enemy>();
+
+
         }
 
         private void CreateMaps()
         {
-            overWorld = AdventurePlanner.PlanOverworld();
-
+            overWorld = AdventurePlanner.PlanOverworld();            
         }
 
         // Start is called before the first frame update
         void Start()
         {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            initializing = true;
             CreateMaps();
             UpdateScene();
+            initializing = false;
         }
 
         private void UpdateScene()
@@ -62,8 +75,10 @@ namespace Lofi.Game
                 //Debug.Log("SDASDAD");
             }
 
-            if (!playersTurn)
-                playersTurn = true;
+            if (playersTurn || enemiesTurn || initializing)
+                return;
+
+            StartCoroutine(MoveEnemies());
         }
 
         public void UpdateActiveSection(GameMapSection activeSection)
@@ -83,6 +98,30 @@ namespace Lofi.Game
         {
             //Debug.Log("Player Moved");
 
+        }
+
+        public void AddEnemyToList(Enemy enemy)
+        {            
+            enemies.Add(enemy);
+        }
+
+        IEnumerator MoveEnemies()
+        {
+            enemiesTurn = true;
+            yield return new WaitForSeconds(turnDelay);
+
+            if (enemies.Count == 0)
+            {
+                yield return new WaitForSeconds(turnDelay);
+            }
+
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                enemies[i].EnemyTurn();
+                yield return new WaitForSeconds(enemies[i].moveTime);
+            }
+            playersTurn = true;
+            enemiesTurn = false;
         }
     }
 }

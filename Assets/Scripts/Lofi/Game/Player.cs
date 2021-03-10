@@ -8,13 +8,15 @@ namespace Lofi.Game
     public class Player : MovingObject
     {
         private SpriteRenderer renderer;
+        private Animator animator;
         public Sprite[] idleSprites;
 
         private void Awake()
         {
             idleSprites = Resources.LoadAll<Sprite>("Sprites/Player/Player");
             renderer = GetComponent<SpriteRenderer>();
-            renderer.sprite = idleSprites[1]; 
+            animator = GetComponent<Animator>();
+            //renderer.sprite = idleSprites[1]; 
         }
         // Update is called once per frame
         void Update()
@@ -29,31 +31,62 @@ namespace Lofi.Game
             if (Input.GetKey(KeyCode.W))
             {
                 vertical = 1;
-                renderer.sprite = idleSprites[0];
+                //renderer.sprite = idleSprites[0];
             }
             else if (Input.GetKey(KeyCode.A))
             {
                 horizontal = -1;
-                renderer.sprite = idleSprites[3];
+                //renderer.sprite = idleSprites[3];
             }
-            else if (Input.GetKey(KeyCode.S))
+            else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.X))
             {
                 vertical = -1;
-                renderer.sprite = idleSprites[2];
+                //renderer.sprite = idleSprites[2];
             }
             else if (Input.GetKey(KeyCode.D))
             {
                 horizontal = 1;
-                renderer.sprite = idleSprites[1];
+                //renderer.sprite = idleSprites[1];
+            }
+            if (Input.GetKey(KeyCode.Q))
+            {
+                vertical = 1;
+                horizontal = -1;
+                //renderer.sprite = idleSprites[0];
+            }
+            else if (Input.GetKey(KeyCode.Z))
+            {
+                horizontal = -1;
+                vertical = -1;
+                //renderer.sprite = idleSprites[2];
+            }
+            else if (Input.GetKey(KeyCode.C))
+            {
+                vertical = -1;
+                horizontal = 1;
+                //renderer.sprite = idleSprites[2];
+            }
+            else if (Input.GetKey(KeyCode.E))
+            {
+                horizontal = 1;
+                vertical = 1;
+                //renderer.sprite = idleSprites[0];
+            }
+            else if (Input.GetKey(KeyCode.Space))
+            {
+                GameManager.instance.playersTurn = false; // Skip Turn
             }
 
             if (horizontal != 0 || vertical != 0)
             {
-                Debug.Log("D:" + horizontal + ", " + vertical);
+                animator.SetFloat("Horizontal", horizontal);
+                animator.SetFloat("Vertical", vertical);
+                animator.SetFloat("dasdsd", vertical);
+                //Debug.Log("D:" + horizontal + ", " + vertical);
                 AttemptMove(horizontal, vertical);
+                GameManager.instance.playersTurn = false;
             }
 
-            GameManager.instance.playersTurn = false;
         }
 
         protected override void OnCantMove(GameObject other)
@@ -64,6 +97,8 @@ namespace Lofi.Game
         protected override IEnumerator SmoothMovement(Vector3 end)
         {
             isMoving = true;
+
+            animator.SetFloat("Magnitude", 1.0f);
 
             float sqrRemainingDistance = (transform.position - end).sqrMagnitude;
             Vector3 newPostion; 
@@ -80,6 +115,8 @@ namespace Lofi.Game
 
             newPostion = new Vector3(Mathf.RoundToInt(end.x), Mathf.RoundToInt(end.y), end.z);
             rb2D.MovePosition(newPostion);
+
+            animator.SetFloat("Magnitude", 0.0f);
 
             isMoving = false;
             GameManager.instance.PlayerMoved(newPostion);

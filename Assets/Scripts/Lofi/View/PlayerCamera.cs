@@ -14,14 +14,21 @@ public class PlayerCamera : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        float x = ((Mathf.RoundToInt(player.transform.position.x) / Width) * Width) + Width / 2f;
-        float y = ((Mathf.RoundToInt(player.transform.position.y) / Height) * Height) + Height / 2f;
-        this.transform.position = new Vector3(x, y, this.transform.position.z);
+        //float x = ((Mathf.RoundToInt(player.transform.position.x) / Width) * Width) + Width / 2f;
+        //float y = ((Mathf.RoundToInt(player.transform.position.y) / Height) * Height) + Height / 2f;
+        //this.transform.position = new Vector3(x, y, this.transform.position.z);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+
+            if (player == null) return;
+        }
+
         float x = ((Mathf.RoundToInt(player.transform.position.x) / Width) * Width) + Width / 2f;
         float y = ((Mathf.RoundToInt(player.transform.position.y) / Height) * Height) + Height / 2f;
 

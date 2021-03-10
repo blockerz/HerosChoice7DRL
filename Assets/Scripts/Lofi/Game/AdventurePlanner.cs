@@ -70,10 +70,10 @@ namespace Lofi.Game
 
                 IEnumerable<DirectedEdge> path = DijkstraShortestPath.FindPath(map.regionGraph, startRegion.ID, endRegion.ID);
 
-                foreach(var node in path)
-                {
-                    Debug.Log($"Node: {node.To}");
-                }
+                //foreach(var node in path)
+                //{
+                //    Debug.Log($"Node: {node.To}");
+                //}
 
                 String debug = "Start Region: " + startRegion.ID + " End Region: " + endRegion.ID + "\n";
                 foreach (var region in selectedRegions)
