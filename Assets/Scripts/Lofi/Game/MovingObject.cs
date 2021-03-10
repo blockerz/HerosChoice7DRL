@@ -4,18 +4,27 @@ using System.Collections;
 namespace Lofi.Game
 {
 	public abstract class MovingObject : MonoBehaviour
-	{
-		public float moveTime = 0.03f;           
+	{	
+		[HideInInspector]
+		public float moveTime;           
 		public LayerMask blockingLayer;         
 
 
 		protected BoxCollider2D boxCollider;      
 		protected Rigidbody2D rb2D;               
 		protected Transform placeholder;               
-		protected float inverseMoveTime;          
-		protected bool isMoving;                  
+		protected float speed = 30;          
+		protected bool isMoving;
+		public SpriteRenderer renderer;
+		public IEnemyBehavior enemyBehavior;
+
+		protected void Awake()
+		{
+			renderer = GetComponent<SpriteRenderer>();
+		}
 
 		public int Health { get; set; }
+		public int MaxHealth { get; set; }
 		public int Damage { get; set; }
 
 		protected virtual void Start()
@@ -23,13 +32,13 @@ namespace Lofi.Game
 			boxCollider = GetComponent<BoxCollider2D>();
 			rb2D = GetComponent<Rigidbody2D>();
 			placeholder = transform.Find("Placeholder");
-			placeholder.gameObject.SetActive(false);
-			inverseMoveTime = 1f / moveTime;
+			placeholder.gameObject.SetActive(false);			
 			blockingLayer = LayerMask.GetMask("Blocking");
+			moveTime = 0.2f;
 		}
 
 
-		protected virtual bool Move(int xDir, int yDir, out RaycastHit2D hit)
+		public virtual bool Move(int xDir, int yDir, out RaycastHit2D hit)
 		{
 			Vector2 originAdjustment = new Vector2(0.5f, 0.5f);
 			Vector2 start = transform.position;
@@ -61,7 +70,7 @@ namespace Lofi.Game
 
 			while (sqrRemainingDistance > 1)
 			{
-				Vector3 newPostion = Vector3.MoveTowards(rb2D.position, end, inverseMoveTime * Time.deltaTime);
+				Vector3 newPostion = Vector3.MoveTowards(rb2D.position, end, speed * Time.deltaTime);
 				rb2D.MovePosition(newPostion);
 
 				sqrRemainingDistance = (transform.position - end).sqrMagnitude;
@@ -90,11 +99,35 @@ namespace Lofi.Game
 			if (other.name.Equals("Placeholder"))
 				other = other.transform.parent.gameObject;
 
-			if (!canMove && other != null)
+			if (!canMove && other != null && other.transform != this.transform)
 				OnCantMove(other);
 		}
 
+		public void ReceiveIncomingDamage(GameObject other, int damage)
+        {
+			Health -= damage;
+			FlashColor(Color.red);
+
+			if (Health <= 0)
+				OnDeath(other);
+        }
+
+		public void FlashColor(Color color)
+		{
+			if (renderer == null)
+				return;
+
+			renderer.color = color;
+			StartCoroutine(Flash());
+		}
+
+		private IEnumerator Flash()
+		{
+			yield return new WaitForSeconds(0.2f);
+			renderer.color = Color.white;
+		}
 
 		protected abstract void OnCantMove(GameObject other);
+		protected abstract void OnDeath(GameObject other);
 	}
 }

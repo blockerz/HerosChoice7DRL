@@ -12,7 +12,6 @@ namespace Lofi.Game
         public static GameManager instance = null;
         
         private SceneManager sceneManager;
-        private List<Enemy> enemies;
         private float turnDelay = 0.3f;
 
         public static IRandom Random { get; private set; }
@@ -34,9 +33,6 @@ namespace Lofi.Game
             DontDestroyOnLoad(gameObject);
 
             sceneManager = GetComponentInChildren<SceneManager>();
-
-            enemies = new List<Enemy>();
-
 
         }
 
@@ -100,26 +96,25 @@ namespace Lofi.Game
 
         }
 
-        public void AddEnemyToList(Enemy enemy)
-        {            
-            enemies.Add(enemy);
-        }
-
         IEnumerator MoveEnemies()
         {
             enemiesTurn = true;
             yield return new WaitForSeconds(turnDelay);
 
-            if (enemies.Count == 0)
+            List<Enemy> activeEnemies = ActiveSection.GetEnemies();
+
+            if (activeEnemies.Count == 0)
             {
                 yield return new WaitForSeconds(turnDelay);
             }
 
-            for (int i = 0; i < enemies.Count; i++)
+            for (int i = 0; i < activeEnemies.Count; i++)
             {
-                enemies[i].EnemyTurn();
-                yield return new WaitForSeconds(enemies[i].moveTime);
+                activeEnemies[i].EnemyTurn();
+                //Debug.Log("Waiting for " + activeEnemies[i].moveTime);
+                yield return new WaitForSeconds(activeEnemies[i].moveTime);
             }
+            Debug.Log("Players turn");
             playersTurn = true;
             enemiesTurn = false;
         }

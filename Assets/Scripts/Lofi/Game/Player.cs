@@ -7,14 +7,26 @@ namespace Lofi.Game
 {
     public class Player : MovingObject
     {
-        private SpriteRenderer renderer;
+        //private SpriteRenderer renderer;
         private Animator animator;
         public Sprite[] idleSprites;
 
+        int lastMoveHorizontal = 0;
+        int lastMoveVertical = 0;
+
+        protected override void Start()
+        {
+            base.Start();
+            Health = 6;
+            MaxHealth = 6;
+            Damage = 1;
+        }
+
         private void Awake()
         {
+            base.Awake();
             idleSprites = Resources.LoadAll<Sprite>("Sprites/Player/Player");
-            renderer = GetComponent<SpriteRenderer>();
+            //renderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
             //renderer.sprite = idleSprites[1]; 
         }
@@ -25,7 +37,7 @@ namespace Lofi.Game
 
             if (isMoving) return;
 
-            int horizontal = 0;     
+            int horizontal = 0;
             int vertical = 0;
 
             if (Input.GetKey(KeyCode.W))
@@ -82,6 +94,8 @@ namespace Lofi.Game
                 animator.SetFloat("Horizontal", horizontal);
                 animator.SetFloat("Vertical", vertical);
                 animator.SetFloat("dasdsd", vertical);
+                lastMoveHorizontal = horizontal;
+                lastMoveVertical = vertical;
                 //Debug.Log("D:" + horizontal + ", " + vertical);
                 AttemptMove(horizontal, vertical);
                 GameManager.instance.playersTurn = false;
@@ -92,6 +106,23 @@ namespace Lofi.Game
         protected override void OnCantMove(GameObject other)
         {
             Debug.Log(this.name + " hit " + other.name);
+
+            if (other != null)
+            {
+                Enemy enemy = other.GetComponent<Enemy>();
+
+                if (enemy != null)
+                {
+                    enemy.ReceiveIncomingDamage(gameObject, Damage);
+
+                    RaycastHit2D hit;
+
+                    bool canMove = enemy.Move(lastMoveHorizontal, lastMoveVertical, out hit);
+
+                    if (hit.transform == null)
+                        Debug.Log(this.name + " knocked back " + other.name);
+                }
+            }
         }
 
         protected override IEnumerator SmoothMovement(Vector3 end)
@@ -105,7 +136,7 @@ namespace Lofi.Game
 
             while (sqrRemainingDistance > 1)
             {
-                newPostion = Vector3.MoveTowards(rb2D.position, end, inverseMoveTime * Time.deltaTime);
+                newPostion = Vector3.MoveTowards(rb2D.position, end, speed * Time.deltaTime);
                 rb2D.MovePosition(newPostion);
 
                 sqrRemainingDistance = (transform.position - end).sqrMagnitude;
@@ -121,5 +152,11 @@ namespace Lofi.Game
             isMoving = false;
             GameManager.instance.PlayerMoved(newPostion);
         }
+
+        protected override void OnDeath(GameObject other)
+        {
+            Debug.Log(this.name + " was killed by " + other.name);
+        }
     }
+
 }

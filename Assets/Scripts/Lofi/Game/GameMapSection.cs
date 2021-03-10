@@ -1,3 +1,4 @@
+using Lofi.Game;
 using Lofi.Maps;
 using System;
 using System.Collections;
@@ -16,12 +17,15 @@ public class GameMapSection : MonoBehaviour
     private BoxCollider2D activator;
     private SpriteRenderer background;
     private GameObject[,] tiles;
-    
+    private List<Enemy> enemies;
+    private LayerMask layerMask;
 
     private void Awake()
     {
         activator = GetComponentInChildren<BoxCollider2D>();
-        background = GetComponentInChildren<SpriteRenderer>();       
+        background = GetComponentInChildren<SpriteRenderer>();
+        enemies = new List<Enemy>();
+        layerMask = LayerMask.GetMask("Blocking");
     }
 
     public void Initialize(int width, int height, SectionTheme theme)
@@ -39,6 +43,21 @@ public class GameMapSection : MonoBehaviour
         tiles = new GameObject[width, height];
         theme.FillSectionTiles(this);
 
+    }
+
+    public void AddEnemyToList(Enemy enemy)
+    {
+        enemies.Add(enemy);
+    }
+    
+    public void RemoveEnemyFromList(Enemy enemy)
+    {
+        enemies.Remove(enemy);
+    }
+
+    public List<Enemy> GetEnemies()
+    {
+        return enemies;
     }
 
     public GameObject GetTile(int x, int y)
@@ -81,8 +100,77 @@ public class GameMapSection : MonoBehaviour
         GenerateMonsters();
     }
 
-    private void GenerateMonsters()
+    public Vector3 GetTilePositionInWorldSpace(int x, int y)
+    {
+        return new Vector3(x + this.transform.position.x, y + this.transform.position.y);
+    }
+
+    public GameObject GetEntityAtPosition(int x, int y)
+    {
+        Vector2 bottom = GetTilePositionInWorldSpace(x, y) + new Vector3(0.05f, 0.05f);
+        Vector2 top = bottom + new Vector2(0.9f, 0.9f);
+
+        var entity = Physics2D.OverlapArea(bottom, top, layerMask);
+
+        if (entity != null)
+            return entity.gameObject;
+
+        return null;
+    }
+
+    public Vector3 GetRandomOpenTile()
     {
         
+        int attempts = 100;
+        //Vector3 playerPosition = GameObject.FindGameObjectWithTag("Player").transform.position;
+
+        do
+        {
+            int x = MapFactory.RandomGenerator.Next(1,Width-2);
+            int y = MapFactory.RandomGenerator.Next(1,Height-2);
+
+            if (GetTile(x,y) == null)
+            {
+                if(GetEntityAtPosition(x,y) != null)
+                {
+                    continue;
+                }
+
+                //if (Mathf.RoundToInt(playerPosition.x - this.transform.position.x) == x &&
+                //    Mathf.RoundToInt(playerPosition.y - this.transform.position.y) == y)
+                //{
+                //    continue;
+                //}
+
+                //foreach (var enemy in enemies)
+                //{
+                //    if(Mathf.RoundToInt(enemy.transform.position.x - this.transform.position.x) == x &&
+                //        Mathf.RoundToInt(enemy.transform.position.y - this.transform.position.y) == y)
+                //    {
+                //        continue;
+                //    }                                       
+                //}
+
+                return new Vector3(x, y, -1);
+            }
+
+        } while (attempts-- >= 0);
+
+        return Vector3.zero;
+    }
+    private void GenerateMonsters()
+    {
+        int maxEnemies = 3; 
+
+        for(int n = 0; n < maxEnemies; n++)
+        {
+            Vector3 randTile = GetRandomOpenTile();
+            if (randTile != Vector3.zero)
+            {
+                GameObject enemy = EnemyFactory.GetEnemyForTheme(Theme.name, this.transform.gameObject);
+                enemy.transform.position = randTile + this.transform.position;
+                AddEnemyToList(enemy.GetComponent<Enemy>());
+            }
+        }
     }
 }

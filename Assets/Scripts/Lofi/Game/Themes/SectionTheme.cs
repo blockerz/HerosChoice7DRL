@@ -29,6 +29,18 @@ public class SectionTheme : ScriptableObject
     public int doorHeight = 3;
     public int maxSectionSize = int.MaxValue;
 
+    public static List<Vector2Int> neighborsWDiagonals = new List<Vector2Int>
+        {
+                new Vector2Int(0, 1),
+                new Vector2Int(1,1),
+                new Vector2Int(1,0),
+                new Vector2Int(1,-1),
+                new Vector2Int(0, -1),
+                new Vector2Int(-1,-1),
+                new Vector2Int(-1,0),
+                new Vector2Int(-1,1)
+        };
+
 
     public Dictionary<byte, Rect> tilingZones;
 
@@ -151,12 +163,7 @@ public class SectionTheme : ScriptableObject
                             || (x == section.Width - 3 && y == section.Height - 3) 
                             )
                         {
-                            GameObject tile = section.GetTile(x, y);
-
-                            tile = Instantiate(mapTilePrefab, section.transform);
-                            tile.name = "Tile: " + x + ", " + y;
-                            tile.transform.position = new Vector3(x, y, -0.01f);
-                            section.SetTile(x, y, tile);
+                            InstantiateTile(section, x, y);
                         }
 
                     }
@@ -164,6 +171,9 @@ public class SectionTheme : ScriptableObject
                 }
             }
         }
+
+        //CreateRandomTilesIfOpen(section, 4);
+        CreateGroveTilesIfOpen(section, MapFactory.RandomGenerator.Next(1,5), MapFactory.RandomGenerator.Next(1, 5));
 
         for (int y = 0; y < section.Height; y++)
         {
@@ -179,6 +189,70 @@ public class SectionTheme : ScriptableObject
         }
 
 
+    }
+
+    private static void InstantiateTile(GameMapSection section, int x, int y)
+    {
+        GameObject tile = section.GetTile(x, y);
+
+        tile = Instantiate(mapTilePrefab, section.transform);
+        tile.name = "Tile: " + x + ", " + y;
+        tile.transform.position = new Vector3(x, y, -0.01f);
+        section.SetTile(x, y, tile);
+    }
+
+
+    private void CreateGroveTilesIfOpen(GameMapSection section, int width = 2, int height = 2)
+    {
+        if (width <= 1 || height <= 1)
+            return;
+
+        int xpos = MapFactory.RandomGenerator.Next(1, section.Width - 2 - (width));
+        int ypos = MapFactory.RandomGenerator.Next(1, section.Height - 2 - (height));
+
+        for (int y = ypos; y < ypos + height*2; y+=2)
+        {
+            for (int x = xpos; x < xpos + width*2; x+=2)
+            {
+                CreateSingleTileIfOpen(section, x, y);
+            }
+        }
+
+    }
+
+    private void CreateRandomTilesIfOpen(GameMapSection section, int number = 2)
+    {
+        if (number <= 0)
+            return;
+
+        int attempts = number + 10;
+
+        do
+        {
+            int xpos = MapFactory.RandomGenerator.Next(2, section.Width - 3);
+            int ypos = MapFactory.RandomGenerator.Next(2, section.Height - 3);
+
+            if (CreateSingleTileIfOpen(section, xpos, ypos))
+                number--;
+            attempts--;
+        }
+        while (number > 0 && attempts > 0);
+
+    }
+
+    private bool CreateSingleTileIfOpen(GameMapSection section, int x, int y)
+    {
+        if (x <= 0 || y <= 0 || x >= section.Width - 1 || y >= section.Height - 1)
+            return false; 
+
+        foreach(var neighbor in neighborsWDiagonals)
+        {
+            if (section.GetTile(x + neighbor.x, y + neighbor.y) != null)
+                return false;
+        }
+
+        InstantiateTile(section, x, y);
+        return true;
     }
 
     private DefaultFileIndex GetTileBasedOnNeighbors(int x, int y, GameMapSection section)

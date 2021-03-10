@@ -25,9 +25,9 @@ public class GameMapThemes : ScriptableObject
 
     public SectionTheme GetThemeForRegion(Section section)
     {
-        if (section.RegionID <= 3)
+        if (section.RegionID <= 2)
             return themes[0];
-        if (section.RegionID <= 6)
+        if (section.RegionID <= 4)
             return themes[2];
         return themes[1];
     }
