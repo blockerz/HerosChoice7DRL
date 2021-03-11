@@ -33,6 +33,8 @@ namespace Lofi.Game
                 Destroy(gameObject);
             DontDestroyOnLoad(gameObject);
 
+            Application.targetFrameRate = 60;
+
             sceneManager = GetComponentInChildren<SceneManager>();
             Turns = 0;
         }

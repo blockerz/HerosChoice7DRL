@@ -1,4 +1,5 @@
 using Lofi.Maps;
+using RogueSharp.Algorithms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -50,6 +51,39 @@ namespace Lofi.Game
                 GameManager.instance.player.name = "Player";
                 GameManager.instance.player.transform.position = startPos;
 
+                UpdateSectionDifficultiesBasedOnStart();
+
+                //startSection.gameObject.SetActive(true);
+            }
+        }
+
+        public void UpdateSectionDifficultiesBasedOnStart()
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    GameMapSection mapSection = mapSections[x, y];
+                    mapSection.difficulty = GetSectionDifficulty(mapSection);
+                }
+            }
+        }
+
+        public int GetSectionDifficulty(GameMapSection section)
+        {
+            try
+            {
+                var path = new DijkstraShortestPath(map.sectionGraph, map.GetSectionIndex(section.Section.OriginX, section.Section.OriginY));
+
+                if (path == null)
+                    return 1;
+
+                return (int)path.DistanceTo(map.GetSectionIndex(startSection.Section.OriginX, startSection.Section.OriginY));
+            }
+            catch(Exception e)
+            {
+                Debug.LogError("Difficuly calculation failed for:" + section.name);
+                return 1;
             }
         }
 
@@ -71,6 +105,7 @@ namespace Lofi.Game
                     mapSection.Initialize(TileWidth, TileHeight, themes.GetThemeForRegion(mapSection.Section));
                     mapSection.name = "Section: " + x + ", " + y;
                     mapSection.transform.position = new Vector3(x * TileWidth, y * TileHeight, 0);
+                    //mapSection.gameObject.SetActive(false);
                 }
             }
         }

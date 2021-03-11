@@ -22,6 +22,7 @@ namespace Lofi.Game
         private List<Enemy> enemies;
         private LayerMask layerMask;
         public bool preventEnemySpawns = false;
+        public int difficulty = 0;
 
         private void Awake()
         {
@@ -95,11 +96,13 @@ namespace Lofi.Game
 
         internal void Deactivate()
         {
+            //gameObject.SetActive(false);
             activator.GetComponent<SectionActivator>().playerPresent = false;
         }
 
         internal void Activate()
         {
+            //gameObject.SetActive(true);
             GenerateMonsters();
         }
 
@@ -156,14 +159,15 @@ namespace Lofi.Game
             if (enemies.Count > 0 || preventEnemySpawns)
                 return;
 
-            int maxEnemies = 3;
+            int maxEnemies = 3 + (difficulty / 3);
+            int enemyCount = MapFactory.RandomGenerator.Next(2, maxEnemies);
 
-            for (int n = 0; n < maxEnemies; n++)
+            for (int n = 0; n < enemyCount; n++)
             {
                 Vector3 randTile = GetRandomOpenTile();
                 if (randTile != Vector3.zero)
                 {
-                    GameObject enemy = EnemyFactory.GetEnemyForTheme(Theme.name, this.transform.gameObject);
+                    GameObject enemy = EnemyFactory.GetEnemyForTheme(Theme, difficulty, this.transform.gameObject);
                     enemy.transform.position = randTile + this.transform.position;
                     AddEnemyToList(enemy.GetComponent<Enemy>());
                 }

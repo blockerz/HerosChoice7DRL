@@ -62,6 +62,11 @@ namespace Lofi.Game
             SpriteDirectory = "Sprites/Themes";
             DefaultTileFile = tileFileName;
             defaultSprites = Resources.LoadAll<Sprite>(GetDefaultTileFile());
+
+            if(defaultSprites == null)
+            {
+                Debug.LogError("Failed to load: " + GetDefaultTileFile());
+            }
         }
 
 
