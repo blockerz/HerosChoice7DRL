@@ -27,6 +27,8 @@ namespace Lofi.Game
 
         public static bool DetermineCriticalPath(Map map)
         {
+            map.regionCriticalPath = new List<int>();
+
             try
             {
                 int preferredMaxSize = 2;
@@ -51,6 +53,7 @@ namespace Lofi.Game
                 Region[] regions = new Region[selectedRegions.Values.Count];
                 selectedRegions.Values.CopyTo(regions, 0);
                 Region startRegion = regions[MapFactory.RandomGenerator.Next(0, selectedRegions.Count - 1)];
+                map.regionCriticalPath.Add(startRegion.ID);
                 selectedRegions.Remove(startRegion.ID);
 
 
@@ -70,20 +73,21 @@ namespace Lofi.Game
 
                 IEnumerable<DirectedEdge> path = DijkstraShortestPath.FindPath(map.regionGraph, startRegion.ID, endRegion.ID);
 
-                //foreach(var node in path)
-                //{
-                //    Debug.Log($"Node: {node.To}");
-                //}
+                foreach (var node in path)
+                {
+                    //Debug.Log($"Node: {node.To}");
+                    map.regionCriticalPath.Add(node.To);
+                }
 
                 String debug = "Start Region: " + startRegion.ID + " End Region: " + endRegion.ID + "\n";
-                foreach (var region in selectedRegions)
-                {
-                    debug += "Region: " + region.Key + ": \n";
-                    foreach (var con in region.Value.connectedRegions)
-                    {
-                        debug += "  Connection: " + con.ID + "\n";
-                    }
-                }
+                //foreach (var region in selectedRegions)
+                //{
+                //    debug += "Region: " + region.Key + ": \n";
+                //    foreach (var con in region.Value.connectedRegions)
+                //    {
+                //        debug += "  Connection: " + con.ID + "\n";
+                //    }
+                //}
                 Debug.Log(debug);
             }
             catch (Exception e)

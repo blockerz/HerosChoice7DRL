@@ -1,4 +1,5 @@
 using Lofi.Game;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Lofi.Game
 
         int lastMoveHorizontal = 0;
         int lastMoveVertical = 0;
+
 
         protected override void Start()
         {
@@ -151,6 +153,11 @@ namespace Lofi.Game
 
             isMoving = false;
             GameManager.instance.PlayerMoved(newPostion);
+        }
+
+        internal void AddHealth(int healthAmount)
+        {
+            Health = Math.Min(Health + healthAmount, MaxHealth);
         }
 
         protected override void OnDeath(GameObject other)

@@ -22,7 +22,8 @@ namespace Lofi.Game
 
         public GameMapSection ActiveSection;
         public GameMapSection LastSection;
-
+        public GameObject player; 
+        public int Turns { get; set; }
 
         private void Awake()
         {
@@ -33,7 +34,7 @@ namespace Lofi.Game
             DontDestroyOnLoad(gameObject);
 
             sceneManager = GetComponentInChildren<SceneManager>();
-
+            Turns = 0;
         }
 
         private void CreateMaps()

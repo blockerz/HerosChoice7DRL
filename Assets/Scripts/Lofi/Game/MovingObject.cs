@@ -91,7 +91,7 @@ namespace Lofi.Game
 
 			bool canMove = Move(xDir, yDir, out hit);
 
-			if (hit.transform == null)
+			if (canMove || hit.transform == null)
 				return;
 
 			GameObject other = hit.transform.gameObject;

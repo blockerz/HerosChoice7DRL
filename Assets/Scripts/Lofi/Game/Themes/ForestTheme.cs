@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ForestTheme : SectionTheme
+namespace Lofi.Game
 {
-    public ForestTheme() : base()
+    public class ForestTheme : SectionTheme
     {
-        ThemeName = "Forest";
-        DefaultTileFile = "ForestDefault";
+        public ForestTheme() : base()
+        {
+            ThemeName = "Forest";
+            DefaultTileFile = "ForestDefault";
+        }
     }
 }

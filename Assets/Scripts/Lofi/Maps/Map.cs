@@ -22,6 +22,7 @@ namespace Lofi.Maps
         public List<RegionConnection> regionConnections;
         public EdgeWeightedDigraph sectionGraph;
         public EdgeWeightedDigraph regionGraph;
+        public List<int> regionCriticalPath;
 
         public Map (int width, int height)
         {

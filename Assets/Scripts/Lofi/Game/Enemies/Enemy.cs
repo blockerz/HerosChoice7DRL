@@ -110,7 +110,26 @@ namespace Lofi.Game
 
             section.RemoveEnemyFromList(this);
 
+            section.DropLoot(gameObject);
+
             Destroy(gameObject);
+
+        }
+
+        public override bool Move(int xDir, int yDir, out RaycastHit2D hit)
+        {
+            Vector3 newPos = transform.position + new Vector3(xDir, yDir);
+
+            GameMapSection section = GameManager.instance.ActiveSection;
+            
+            if (newPos.x < section.transform.position.x || newPos.y < section.transform.position.y ||
+                newPos.x >= section.transform.position.x + section.Width || newPos.y >= section.transform.position.y + section.Height)
+            {
+                hit = new RaycastHit2D();
+                return true; // true to pass the turn without an attack
+            }
+
+            return base.Move(xDir, yDir, out hit);
         }
     }
 }

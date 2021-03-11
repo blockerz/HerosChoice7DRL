@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SwampTheme : SectionTheme
+namespace Lofi.Game
 {
-    public SwampTheme() : base()
+    public class SwampTheme : SectionTheme
     {
-        ThemeName = "Swamp";
-        DefaultTileFile = "SwampDefault";
+        public SwampTheme() : base()
+        {
+            ThemeName = "Swamp";
+            DefaultTileFile = "SwampDefault";
+        }
     }
 }

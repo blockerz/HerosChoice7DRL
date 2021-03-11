@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DesertTheme : SectionTheme
+namespace Lofi.Game
 {
-    public DesertTheme() : base()
+    public class DesertTheme : SectionTheme
     {
-        ThemeName = "Desert";
-        DefaultTileFile = "DesertDefault";
+        public DesertTheme() : base()
+        {
+            ThemeName = "Desert";
+            DefaultTileFile = "DesertDefault";
+        }
     }
 }

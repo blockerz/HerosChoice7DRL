@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.U2D;
 
 public class PlayerCamera : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class PlayerCamera : MonoBehaviour
         //float x = ((Mathf.RoundToInt(player.transform.position.x) / Width) * Width) + Width / 2f;
         //float y = ((Mathf.RoundToInt(player.transform.position.y) / Height) * Height) + Height / 2f;
         //this.transform.position = new Vector3(x, y, this.transform.position.z);
+
     }
 
     // Update is called once per frame
@@ -30,11 +32,16 @@ public class PlayerCamera : MonoBehaviour
         }
 
         float x = ((Mathf.RoundToInt(player.transform.position.x) / Width) * Width) + Width / 2f;
-        float y = ((Mathf.RoundToInt(player.transform.position.y) / Height) * Height) + Height / 2f;
+        float y = 1.5f + ((Mathf.RoundToInt(player.transform.position.y) / Height) * Height) + Height / 2f;
 
         newPosition = new Vector3(x, y, this.transform.position.z);
 
-        if (!isMoving && this.transform.position != newPosition)
+        if (Mathf.Abs(newPosition.x - this.transform.position.x) > Width + 1 ||
+            Mathf.Abs(newPosition.y - this.transform.position.y) > Height + 1)
+        {
+            this.transform.position = newPosition;
+        }
+        else if (!isMoving && this.transform.position != newPosition)
         {
             StartCoroutine(SmoothMovement(newPosition));
         }
