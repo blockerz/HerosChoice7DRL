@@ -191,9 +191,47 @@ namespace Lofi.Game
                 //Debug.Log("Waiting for " + activeEnemies[i].moveTime);
                 yield return new WaitForSeconds(activeEnemies[i].moveTime);
             }
-            Debug.Log("Players turn");
+
+            FixOverlappingEntities();
+
+            //Debug.Log("Players turn");
             playersTurn = true;
             enemiesTurn = false;
+        }
+
+        private void FixOverlappingEntities()
+        {
+            List<Enemy> activeEnemies = ActiveSection.GetEnemies();
+            List<GameObject> potentialCollitions = new List<GameObject>();
+            RaycastHit2D hit;
+
+            foreach (var enemy in activeEnemies)
+            {
+                potentialCollitions.Clear();
+                potentialCollitions.Add(player);
+
+                foreach (var otherenemy in activeEnemies)
+                {
+                    if(otherenemy != enemy)
+                        potentialCollitions.Add(otherenemy.gameObject);
+                }
+
+                foreach(var col in potentialCollitions)
+                {
+                    if(col.transform.position == enemy.transform.position)
+                    {
+                        Debug.LogError("OVERLAP DETECTED: " + enemy.name + " overlapped " + col.name);
+                        //foreach(var dir in MovingObject.directions)
+                        //{
+                        //    if (enemy.Move((int)dir.x, (int)dir.y, out hit))
+                        //    {
+                        //        Debug.LogError("Moved entity due to overlap: " + enemy.name + " overlapped " + col.name);
+                        //        break;
+                        //    }
+                        //}
+                    }
+                }
+            }
         }
     }
 }

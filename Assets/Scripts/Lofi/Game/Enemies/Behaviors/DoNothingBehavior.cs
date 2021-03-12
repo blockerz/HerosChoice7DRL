@@ -6,6 +6,11 @@ namespace Lofi.Game
 {
     public class DoNothingBehavior : IEnemyBehavior
     {
+        public void AddAbilites(Enemy self)
+        {
+            
+        }
+
         public void DecideNextMove(Enemy self)
         {
             

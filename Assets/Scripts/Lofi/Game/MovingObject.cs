@@ -18,6 +18,18 @@ namespace Lofi.Game
 		public SpriteRenderer renderer;
 		public IEnemyBehavior enemyBehavior;
 
+		public static Vector2[] directions =
+{
+			new Vector2(0,1),
+			new Vector2(1,1),
+			new Vector2(1,0),
+			new Vector2(1,-1),
+			new Vector2(0,-1),
+			new Vector2(-1,-1),
+			new Vector2(-1,0),
+			new Vector2(-1,1)
+		};
+
 		protected void Awake()
 		{
 			renderer = GetComponent<SpriteRenderer>();

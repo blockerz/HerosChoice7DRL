@@ -168,19 +168,21 @@ namespace Lofi.Game
             if (turnLastVisited != 0 && GameManager.instance.Turns - turnLastVisited < 100)
                 return;
 
-            int maxEnemies = 3 + (difficulty / 3);
-            int enemyCount = MapFactory.RandomGenerator.Next(2, maxEnemies);
+            EnemyFactory.GetEnemyForTheme(this);
 
-            for (int n = 0; n < enemyCount; n++)
-            {
-                Vector3 randTile = GetRandomOpenTile();
-                if (randTile != Vector3.zero)
-                {
-                    GameObject enemy = EnemyFactory.GetEnemyForTheme(Theme, difficulty, this.transform.gameObject);
-                    enemy.transform.position = randTile + this.transform.position;
-                    AddEnemyToList(enemy.GetComponent<Enemy>());
-                }
-            }
+            //int maxEnemies = 2 + (difficulty / 3);
+            //int enemyCount = MapFactory.RandomGenerator.Next(2, maxEnemies);
+
+            //for (int n = 0; n < enemyCount; n++)
+            //{
+            //    Vector3 randTile = GetRandomOpenTile();
+            //    if (randTile != Vector3.zero)
+            //    {
+            //        GameObject enemy = EnemyFactory.GetEnemyForTheme(Theme, difficulty, this.transform.gameObject);
+            //        enemy.transform.position = randTile + this.transform.position;
+            //        AddEnemyToList(enemy.GetComponent<Enemy>());
+            //    }
+            //}
         }
 
         public void ClearArea(int xTile, int yTile, int width, int height)
