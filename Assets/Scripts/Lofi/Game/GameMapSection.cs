@@ -23,6 +23,7 @@ namespace Lofi.Game
         private LayerMask layerMask;
         public bool preventEnemySpawns = false;
         public int difficulty = 0;
+        public int turnLastVisited = 0;
 
         private void Awake()
         {
@@ -40,13 +41,17 @@ namespace Lofi.Game
 
             activator.offset = new Vector2(width / 2f, height / 2f);
             activator.size = new Vector2(width - 1, height - 1);
+            //activator.transform.parent = transform;
+            //background.transform.parent = transform;
             background.sprite = theme.GetBackgroundSprite();
-            background.transform.localScale = new Vector3(width, height, 0);
+            background.color = theme.GetBackgroundSpriteColor();
+            if (!theme.ThemeName.Equals("Dungeon"))  
+                background.transform.localScale = new Vector3(width, height, 0);
             //background.transform.position = new Vector3(0, 0, 0);
 
             tiles = new GameObject[width, height];
             theme.FillSectionTiles(this);
-
+            turnLastVisited = 0;
         }
 
         public void AddEnemyToList(Enemy enemy)
@@ -98,6 +103,7 @@ namespace Lofi.Game
         {
             //gameObject.SetActive(false);
             activator.GetComponent<SectionActivator>().playerPresent = false;
+            turnLastVisited = GameManager.instance.Turns;
         }
 
         internal void Activate()
@@ -159,6 +165,9 @@ namespace Lofi.Game
             if (enemies.Count > 0 || preventEnemySpawns)
                 return;
 
+            if (turnLastVisited != 0 && GameManager.instance.Turns - turnLastVisited < 100)
+                return;
+
             int maxEnemies = 3 + (difficulty / 3);
             int enemyCount = MapFactory.RandomGenerator.Next(2, maxEnemies);
 
@@ -172,6 +181,28 @@ namespace Lofi.Game
                     AddEnemyToList(enemy.GetComponent<Enemy>());
                 }
             }
+        }
+
+        public void ClearArea(int xTile, int yTile, int width, int height)
+        {
+            for (int y= yTile; y < yTile + height;y++)
+            {
+                for(int x = xTile; x < xTile + width; x++)
+                {
+                    if (tiles[x,y] != null)
+                    {
+                        Destroy(tiles[x, y]);
+                        tiles[x, y] = null;
+                    }
+                }
+            }
+        }
+
+        public void AddGameObject(int xTile, int yTile, GameObject go)
+        {
+            tiles[xTile, yTile] = go;
+            go.transform.position = new Vector3(xTile,yTile) + this.transform.position;
+
         }
     }
 }

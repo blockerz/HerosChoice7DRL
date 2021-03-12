@@ -14,7 +14,7 @@ namespace Lofi.Game
 		protected Rigidbody2D rb2D;               
 		protected Transform placeholder;               
 		protected float speed = 30;          
-		protected bool isMoving;
+		public bool isMoving;
 		public SpriteRenderer renderer;
 		public IEnemyBehavior enemyBehavior;
 

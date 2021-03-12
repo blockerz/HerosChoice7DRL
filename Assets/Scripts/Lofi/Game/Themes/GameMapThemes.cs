@@ -1,4 +1,5 @@
 using Lofi.Maps;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -83,6 +84,13 @@ namespace Lofi.Game
             }
 
             //themes.Clear();
+        }
+
+        internal SectionTheme GetThemeForDungeon(Section section)
+        {
+            DungeonTheme theme = new DungeonTheme();
+            theme.Initialize("Dungeon", "DungeonDefault");
+            return theme;
         }
     }
 }

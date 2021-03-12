@@ -88,6 +88,7 @@ namespace Lofi.Game
             }
             else if (Input.GetKey(KeyCode.Space))
             {
+                GameManager.instance.Turns++;
                 GameManager.instance.playersTurn = false; // Skip Turn
             }
 
@@ -100,6 +101,7 @@ namespace Lofi.Game
                 lastMoveVertical = vertical;
                 //Debug.Log("D:" + horizontal + ", " + vertical);
                 AttemptMove(horizontal, vertical);
+                GameManager.instance.Turns++;
                 GameManager.instance.playersTurn = false;
             }
 

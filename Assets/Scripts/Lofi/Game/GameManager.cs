@@ -11,18 +11,26 @@ namespace Lofi.Game
     {
         public static GameManager instance = null;
         
-        private SceneManager sceneManager;
-        private float turnDelay = 0.3f;
+        //private SceneManager sceneManager;
+        private float turnDelay = 0.2f;
 
         public static IRandom Random { get; private set; }
-        Map overWorld;
+        private Map overWorld;
+        //private Map dungeon1;
         internal bool playersTurn = true;
         internal bool enemiesTurn = false;
         internal bool initializing = true;
 
         public GameMapSection ActiveSection;
         public GameMapSection LastSection;
-        public GameObject player; 
+        public GameObject player;
+        GameObject playerPrefab;
+        GameObject GameMapPrefab;
+        GameMap overworldGameMap;
+        GameMap[] dungeonGameMaps;
+        public List<Section> dungeonSections;
+
+
         public int Turns { get; set; }
 
         private void Awake()
@@ -35,13 +43,59 @@ namespace Lofi.Game
 
             Application.targetFrameRate = 60;
 
-            sceneManager = GetComponentInChildren<SceneManager>();
+            //sceneManager = GetComponentInChildren<SceneManager>();
+            GameMapPrefab = (GameObject)Resources.Load("prefabs/GameMap", typeof(GameObject));
+            playerPrefab = (GameObject)Resources.Load("prefabs/Player", typeof(GameObject));
+            //overworldGameMap = GetComponentInChildren<GameMap>();
             Turns = 0;
         }
 
         private void CreateMaps()
         {
-            overWorld = AdventurePlanner.PlanOverworld();            
+            GameObject entrancePrefab = (GameObject)Resources.Load("prefabs/DungeonEntrance", typeof(GameObject));
+            GameObject exitPrefab = (GameObject)Resources.Load("prefabs/WarpPoint", typeof(GameObject));
+
+            overWorld = AdventurePlanner.PlanOverworld();
+            overworldGameMap = Instantiate(GameMapPrefab, this.transform).GetComponent<GameMap>();
+            overworldGameMap.transform.position = Vector3.zero;
+            overworldGameMap.gameObject.name = "Overworld Map";
+            overworldGameMap.CreateMap(overWorld);
+
+            Vector3 mapOffset = new Vector3(overworldGameMap.Width * overworldGameMap.TileWidth, 0, 0);
+
+            dungeonGameMaps = new GameMap[dungeonSections.Count];
+
+            for(int d = 0; d < dungeonSections.Count; d++)
+            {
+                Map dungeonMap = AdventurePlanner.PlanDungeon();
+                dungeonGameMaps[d] = Instantiate(GameMapPrefab, this.transform).GetComponent<GameMap>();
+                dungeonGameMaps[d].gameObject.name = "Dungeon "+ d + " Map";
+                dungeonGameMaps[d].CreateMap(dungeonMap, true);
+                dungeonGameMaps[d].gameObject.transform.position = overworldGameMap.transform.position + mapOffset;
+                mapOffset = mapOffset + new Vector3(dungeonGameMaps[d].Width * dungeonGameMaps[d].TileWidth, 0, 0);
+
+                var entranceSection = overworldGameMap.mapSections[dungeonSections[d].OriginX, dungeonSections[d].OriginY];
+                entranceSection.ClearArea(7, 4, 3, 3);
+                var entranceGo = Instantiate(entrancePrefab, entranceSection.transform);
+                entranceSection.AddGameObject(7, 5, entranceGo);
+
+                var exitSection = dungeonGameMaps[d].mapSections[dungeonMap.startSection.OriginX, dungeonMap.startSection.OriginY];
+                exitSection.ClearArea(1, 1, 1, 2);
+                var exitGo = Instantiate(exitPrefab, exitSection.transform);
+                exitSection.AddGameObject(1, 1, exitGo);
+
+                entranceGo.GetComponentInChildren<WarpPoint>().warpPoint = new Vector2(exitGo.transform.position.x, exitGo.transform.position.y + 1);
+                exitGo.GetComponent<WarpPoint>().warpPoint = new Vector2(entranceGo.transform.position.x + 1, entranceGo.transform.position.y - 1);
+
+                exitSection = dungeonGameMaps[d].mapSections[dungeonMap.endSection.OriginX, dungeonMap.endSection.OriginY];
+                exitSection.ClearArea(1, 1, 1, 2);
+                exitGo = Instantiate(exitPrefab, exitSection.transform);
+                exitSection.AddGameObject(1, 1, exitGo);
+                exitGo.GetComponent<WarpPoint>().warpPoint = new Vector2(entranceGo.transform.position.x + 1, entranceGo.transform.position.y - 1);
+            }
+                
+
+
         }
 
         // Start is called before the first frame update
@@ -54,24 +108,22 @@ namespace Lofi.Game
         {
             initializing = true;
             CreateMaps();
-            UpdateScene();
+            SpawnPlayer(overworldGameMap);
             initializing = false;
         }
 
         private void UpdateScene()
         {
-            sceneManager.UpdateScene(overWorld);
+            //sceneManager.UpdateScene(overWorld);
             //map = AdventurePlanner.PlanAdventure());
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.P))
             {
-                //overWorld = AdventurePlanner.PlanOverworld();
-                //UpdateScene();
-                //Debug.Log("SDASDAD");
+
             }
 
             if (playersTurn || enemiesTurn || initializing)
@@ -97,6 +149,28 @@ namespace Lofi.Game
         {
             //Debug.Log("Player Moved");
 
+        }
+
+        internal void SpawnPlayer(GameMap gameMap)
+        {
+            int startRegion = overWorld.regionCriticalPath[0];
+            Region region;
+            overWorld.regions.TryGetValue(startRegion, out region);
+
+            if (region != null)
+            {
+                gameMap.startSection = gameMap.mapSections[gameMap.map.startSection.OriginX, gameMap.map.startSection.OriginY];
+                gameMap.startSection.preventEnemySpawns = true;
+
+                Vector3 startPos = gameMap.startSection.GetRandomOpenTile() + gameMap.startSection.transform.position;
+                GameManager.instance.player = Instantiate(playerPrefab);
+                GameManager.instance.player.name = "Player";
+                GameManager.instance.player.transform.position = startPos;
+
+                gameMap.UpdateSectionDifficultiesBasedOnStart();
+
+                //startSection.gameObject.SetActive(true);
+            }
         }
 
         IEnumerator MoveEnemies()

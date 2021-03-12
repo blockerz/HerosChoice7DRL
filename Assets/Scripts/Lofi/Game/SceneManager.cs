@@ -9,12 +9,11 @@ namespace Lofi.Game
     {
         Map map;
         MapView mapView;
-        GameMap gameMap;
+
 
         private void Awake()
         {
             mapView = GetComponentInChildren<MapView>();
-            gameMap = GetComponentInChildren<GameMap>();
         }
 
         // Start is called before the first frame update
@@ -28,8 +27,7 @@ namespace Lofi.Game
             mapView.UpdateMap(map);
             mapView.gameObject.SetActive(false);
 
-            gameMap.CreateMap(map);
-            gameMap.SpawnPlayer();
+            
         }
 
         // Update is called once per frame

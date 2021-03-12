@@ -20,6 +20,11 @@ namespace Lofi.Maps
             connectedRegions = new List<Region>();
         }
 
+        public Section GetRandomSectionInRegion()
+        {
+            return sections[MapFactory.RandomGenerator.Next(0, sections.Count - 1)];
+        }
+
         public void UpdateBox()
         {
             float minX = float.MaxValue, minY = float.MaxValue;

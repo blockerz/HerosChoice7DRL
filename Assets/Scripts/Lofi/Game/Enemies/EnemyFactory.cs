@@ -20,7 +20,7 @@ namespace Lofi.Game
 
             int index = MapFactory.RandomGenerator.Next(0, enemySprites.Length - 1);
 
-            return SpawnEnemy(parent, enemySprites[index]);
+            return SpawnEnemy(parent, enemySprites[index], new RangedAttackBehavior());
         }
 
         private static GameObject SpawnEnemy(GameObject parent, string spriteName, IEnemyBehavior behavior = null)

@@ -87,6 +87,11 @@ namespace Lofi.Game
             return GetDefaultTileSpriteForIndex(SectionTheme.DefaultFileIndex.Background);
         }
 
+        public virtual Color GetBackgroundSpriteColor()
+        {
+            return Color.white;
+        }
+
         //public virtual void FillSectionTiles(GameMapSection section)
         //{
         //    for (int y = 0; y < section.Height; y++)
@@ -198,13 +203,13 @@ namespace Lofi.Game
 
         }
 
-        private static void InstantiateTile(GameMapSection section, int x, int y)
+        protected static void InstantiateTile(GameMapSection section, int x, int y)
         {
             GameObject tile = section.GetTile(x, y);
 
             tile = Instantiate(mapTilePrefab, section.transform);
             tile.name = "Tile: " + x + ", " + y;
-            tile.transform.position = new Vector3(x, y, -0.01f);
+            tile.transform.position = section.transform.position + new Vector3(x, y, -0.01f);
             section.SetTile(x, y, tile);
         }
 

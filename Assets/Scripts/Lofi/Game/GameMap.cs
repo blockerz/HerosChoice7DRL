@@ -15,17 +15,16 @@ namespace Lofi.Game
         public int TileWidth { get; set; }
         public int TileHeight { get; set; }
 
-        GameMapSection[,] mapSections;
+        internal GameMapSection[,] mapSections;
         GameObject mapSectionPrefab;
-        GameObject playerPrefab;
+
         GameMapThemes themes;
-        Map map;
-        GameMapSection startSection;
+        public Map map;
+        internal GameMapSection startSection;
 
         private void Awake()
         {
             mapSectionPrefab = (GameObject)Resources.Load("prefabs/GameMapSection", typeof(GameObject));
-            playerPrefab = (GameObject)Resources.Load("prefabs/Player", typeof(GameObject));
             TileWidth = 17;
             TileHeight = 11;
 
@@ -34,28 +33,7 @@ namespace Lofi.Game
 
         }
 
-        internal void SpawnPlayer()
-        {
-            int startRegion = map.regionCriticalPath[0];
-            Region region;
-            map.regions.TryGetValue(startRegion, out region);
-            if (region != null)
-            {
-                Section section = region.sections[MapFactory.RandomGenerator.Next(0, region.sections.Count - 1)];
 
-                startSection = mapSections[section.OriginX, section.OriginY];
-                startSection.preventEnemySpawns = true;
-
-                Vector3 startPos = startSection.GetRandomOpenTile() + startSection.transform.position;
-                GameManager.instance.player = Instantiate(playerPrefab);
-                GameManager.instance.player.name = "Player";
-                GameManager.instance.player.transform.position = startPos;
-
-                UpdateSectionDifficultiesBasedOnStart();
-
-                //startSection.gameObject.SetActive(true);
-            }
-        }
 
         public void UpdateSectionDifficultiesBasedOnStart()
         {
@@ -73,12 +51,13 @@ namespace Lofi.Game
         {
             try
             {
-                var path = new DijkstraShortestPath(map.sectionGraph, map.GetSectionIndex(section.Section.OriginX, section.Section.OriginY));
+                return (int) map.pathFromStartSection.DistanceTo(section.Section.SectionID);
+                //var path = new DijkstraShortestPath(map.sectionGraph, map.GetSectionIndex(section.Section.OriginX, section.Section.OriginY));
 
-                if (path == null)
-                    return 1;
+                //if (path == null)
+                //    return 1;
 
-                return (int)path.DistanceTo(map.GetSectionIndex(startSection.Section.OriginX, startSection.Section.OriginY));
+                //return (int)path.DistanceTo(map.GetSectionIndex(startSection.Section.OriginX, startSection.Section.OriginY));
             }
             catch(Exception e)
             {
@@ -87,7 +66,7 @@ namespace Lofi.Game
             }
         }
 
-        public void CreateMap(Map map)
+        public void CreateMap(Map map, bool dungeon = false)
         {
             this.map = map;
             Width = map.SectionWidth;
@@ -101,11 +80,18 @@ namespace Lofi.Game
                 for (int x = 0; x < Width; x++)
                 {
                     GameMapSection mapSection = mapSections[x, y] = Instantiate(mapSectionPrefab, this.transform).GetComponent<GameMapSection>();
-                    mapSection.Section = map.GetSection(x, y);
-                    mapSection.Initialize(TileWidth, TileHeight, themes.GetThemeForRegion(mapSection.Section));
                     mapSection.name = "Section: " + x + ", " + y;
+                    mapSection.Section = map.GetSection(x, y);
                     mapSection.transform.position = new Vector3(x * TileWidth, y * TileHeight, 0);
+
+                    if(dungeon)
+                        mapSection.Initialize(TileWidth, TileHeight, themes.GetThemeForDungeon(mapSection.Section));
+                    else
+                        mapSection.Initialize(TileWidth, TileHeight, themes.GetThemeForRegion(mapSection.Section));
                     //mapSection.gameObject.SetActive(false);
+
+                    if (mapSection.Section.SectionID == map.startSection.SectionID)
+                        mapSection.preventEnemySpawns = true;
                 }
             }
         }

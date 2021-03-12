@@ -23,6 +23,10 @@ namespace Lofi.Maps
         public EdgeWeightedDigraph sectionGraph;
         public EdgeWeightedDigraph regionGraph;
         public List<int> regionCriticalPath;
+        public Section startSection;
+        public Section endSection;
+        public DijkstraShortestPath pathFromStartSection;
+        public DijkstraShortestPath pathFromEndSection;
 
         public Map (int width, int height)
         {
@@ -187,7 +191,7 @@ namespace Lofi.Maps
         
         public int GetSectionID(int x, int y)
         {
-            return (MapID * MapIDMultiplier) + GetSectionIndex(x, y);
+            return GetSectionIndex(x, y);
         }
 
         public bool isValidSectionIndex(int x, int y)
