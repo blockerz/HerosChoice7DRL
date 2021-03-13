@@ -8,30 +8,45 @@ namespace Lofi.Game
 {
     public class Player : MovingObject
     {
-        //private SpriteRenderer renderer;
+        private SpriteRenderer swordRenderer;
         private Animator animator;
-        public Sprite[] idleSprites;
+        public Sprite[] SwordSprites;
+        private SwordAnimator swordAnimator;
+        private ThrowBoomerang throwBoomerang;
+        private ShootArrow shootArrow;
+        public List<IUseItem> items;
+        public int activeItem = 0;
 
         int lastMoveHorizontal = 0;
         int lastMoveVertical = 0;
 
-
         protected override void Start()
         {
             base.Start();
-            Health = 6;
-            MaxHealth = 6;
+            Health = 8;
+            MaxHealth = 8;
             Damage = 1;
         }
 
         private void Awake()
         {
             base.Awake();
-            idleSprites = Resources.LoadAll<Sprite>("Sprites/Player/Player");
-            //renderer = GetComponent<SpriteRenderer>();
+            SwordSprites = Resources.LoadAll<Sprite>("Sprites/Player/Sword");
+            swordRenderer = transform.Find("Sword").gameObject.GetComponent<SpriteRenderer>();
+            swordAnimator = transform.Find("Sword").gameObject.GetComponent<SwordAnimator>();
+            throwBoomerang = transform.gameObject.GetComponent<ThrowBoomerang>();
+            shootArrow = transform.gameObject.GetComponent<ShootArrow>();
             animator = GetComponent<Animator>();
-            //renderer.sprite = idleSprites[1]; 
+            swordRenderer.sprite = SwordSprites[0];
+            swordAnimator.gameObject.SetActive(false);
+
+            items = new List<IUseItem>();
+
+            items.Add(shootArrow);
+            items.Add(throwBoomerang);
+
         }
+
         // Update is called once per frame
         void Update()
         {
@@ -42,54 +57,97 @@ namespace Lofi.Game
             int horizontal = 0;
             int vertical = 0;
 
-            if (Input.GetKey(KeyCode.W))
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.W))
+            {
+                items[activeItem].UseItemWithDirection(new Vector3(0, 1f, 0));
+                EndTurn();
+            }
+            else if (Input.GetKey(KeyCode.W))
             {
                 vertical = 1;
-                //renderer.sprite = idleSprites[0];
+                swordRenderer.sprite = SwordSprites[0];
+            }
+            else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.A))
+            {
+                items[activeItem].UseItemWithDirection(new Vector3(-1f, 0, 0));
+                EndTurn();
             }
             else if (Input.GetKey(KeyCode.A))
             {
                 horizontal = -1;
-                //renderer.sprite = idleSprites[3];
+                swordRenderer.sprite = SwordSprites[3];
+            }
+            else if (Input.GetKey(KeyCode.LeftShift) && (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.X)))
+            {
+                items[activeItem].UseItemWithDirection(new Vector3(0, -1f, 0));
+                EndTurn();
             }
             else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.X))
             {
                 vertical = -1;
-                //renderer.sprite = idleSprites[2];
+                swordRenderer.sprite = SwordSprites[2];
+            }
+            else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.D))
+            {
+                items[activeItem].UseItemWithDirection(new Vector3(1f, 0, 0));
+                EndTurn();
             }
             else if (Input.GetKey(KeyCode.D))
             {
                 horizontal = 1;
-                //renderer.sprite = idleSprites[1];
+                swordRenderer.sprite = SwordSprites[1];
             }
-            if (Input.GetKey(KeyCode.Q))
+            else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.Q))
             {
-                vertical = 1;
+                items[activeItem].UseItemWithDirection(new Vector3(-1f, 1, 0));
+                EndTurn();
+            }
+            else if (Input.GetKey(KeyCode.Q))
+            {
                 horizontal = -1;
-                //renderer.sprite = idleSprites[0];
+                vertical = 1;
+                swordRenderer.sprite = SwordSprites[7];
+            }
+            else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.Z))
+            {
+                items[activeItem].UseItemWithDirection(new Vector3(-1f, -1f, 0));
+                EndTurn();
             }
             else if (Input.GetKey(KeyCode.Z))
             {
                 horizontal = -1;
                 vertical = -1;
-                //renderer.sprite = idleSprites[2];
+                swordRenderer.sprite = SwordSprites[6];
+            }
+            else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.C))
+            {
+                items[activeItem].UseItemWithDirection(new Vector3(1f, -1f, 0));
+                EndTurn();
             }
             else if (Input.GetKey(KeyCode.C))
             {
-                vertical = -1;
                 horizontal = 1;
-                //renderer.sprite = idleSprites[2];
+                vertical = -1;
+                swordRenderer.sprite = SwordSprites[5];
+            }
+            else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.E))
+            {
+                items[activeItem].UseItemWithDirection(new Vector3(1f, 1, 0));
+                EndTurn();
             }
             else if (Input.GetKey(KeyCode.E))
             {
                 horizontal = 1;
                 vertical = 1;
-                //renderer.sprite = idleSprites[0];
+                swordRenderer.sprite = SwordSprites[4];
             }
             else if (Input.GetKey(KeyCode.Space))
             {
-                GameManager.instance.Turns++;
-                GameManager.instance.playersTurn = false; // Skip Turn
+                EndTurn();
+            }
+            else if (Input.GetKey(KeyCode.B))
+            {
+                activeItem = (activeItem + 1) % (items.Count);
             }
 
             if (horizontal != 0 || vertical != 0)
@@ -101,10 +159,16 @@ namespace Lofi.Game
                 lastMoveVertical = vertical;
                 //Debug.Log("D:" + horizontal + ", " + vertical);
                 AttemptMove(horizontal, vertical);
-                GameManager.instance.Turns++;
-                GameManager.instance.playersTurn = false;
+
+                EndTurn();
             }
 
+        }
+
+        private static void EndTurn()
+        {
+            GameManager.instance.Turns++;
+            GameManager.instance.playersTurn = false; // Skip Turn
         }
 
         protected override void OnCantMove(GameObject other)
@@ -117,6 +181,8 @@ namespace Lofi.Game
 
                 if (enemy != null)
                 {
+                    //swordAnimator.gameObject.SetActive(true);
+                    swordAnimator.AnimateSword(new Vector3(lastMoveHorizontal, lastMoveVertical, 0));
                     enemy.ReceiveIncomingDamage(gameObject, Damage);
 
                     RaycastHit2D hit;

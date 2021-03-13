@@ -18,7 +18,7 @@ namespace Lofi.Game
         {
             renderer = GetComponent<SpriteRenderer>();
             //mask = LayerMask.GetMask("Blocking");
-            speed = 20f;
+            speed = 15f;
         }
 
         // Update is called once per frame

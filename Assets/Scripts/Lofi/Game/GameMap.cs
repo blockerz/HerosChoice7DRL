@@ -83,6 +83,7 @@ namespace Lofi.Game
                     mapSection.name = "Section: " + x + ", " + y;
                     mapSection.Section = map.GetSection(x, y);
                     mapSection.transform.position = new Vector3(x * TileWidth, y * TileHeight, 0);
+   
 
                     if(dungeon)
                         mapSection.Initialize(TileWidth, TileHeight, themes.GetThemeForDungeon(mapSection.Section));
@@ -92,6 +93,16 @@ namespace Lofi.Game
 
                     if (mapSection.Section.SectionID == map.startSection.SectionID)
                         mapSection.preventEnemySpawns = true;
+
+                    if (dungeon && mapSection.Section.SectionID == map.endSection.SectionID)
+                    {
+                        EnemyFactory.GetBossEnemy(mapSection);
+                        mapSection.preventEnemySpawns = true;
+                    }
+
+                    // Make 0 tiles bllack to distinguish in editor
+                    if (mapSection.Section.TileID == 0)
+                        mapSection.gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
                 }
             }
         }

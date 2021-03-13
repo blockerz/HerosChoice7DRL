@@ -4,16 +4,17 @@ using UnityEngine;
 
 namespace Lofi.Game
 {
-    public class RangedAttackBehavior : IEnemyBehavior
-    {
-        public void AddAbilites(Enemy self)
-        {
+	public class RangedStationaryBehavior : IEnemyBehavior
+	{
+		public void AddAbilites(Enemy self)
+		{
 			self.gameObject.AddComponent<ShootProjectile>();
-			self.gameObject.GetComponent<Enemy>().moveTime = 1f;
+			self.gameObject.GetComponent<Enemy>().shouldRemainStationary = true;
+			self.gameObject.GetComponent<Enemy>().moveTime = 1.0f;
 		}
 
-        public void DecideNextMove(Enemy self)
-        {
+		public void DecideNextMove(Enemy self)
+		{
 			Vector2 originAdjustment = new Vector2(0.5f, 0.5f);
 			Vector2 start = self.transform.position;
 			self.transform.GetComponent<BoxCollider2D>().enabled = false;
@@ -30,26 +31,28 @@ namespace Lofi.Game
 					Debug.Log(self.gameObject.name + " Shooting Player: " + vec);
 					Debug.DrawLine(start + originAdjustment, hit.transform.position, Color.green, 3);
 
-					if(self.gameObject.GetComponent<ShootProjectile>() != null)
-                    {
+					if (self.gameObject.GetComponent<ShootProjectile>() != null)
+					{
 						self.gameObject.GetComponent<ShootProjectile>().Shoot(vec);
 
 					}
-                    else
-                    {
+					else
+					{
 						Debug.Log(self.gameObject.name + " attempted to shoot but has no ShootProjectile Ability");
 					}
 					self.transform.GetComponent<BoxCollider2D>().enabled = true;
 					return;
 				}
 				//else if (hit.transform != null)
-    //            {
+				//            {
 				//	Debug.DrawLine(start + originAdjustment, hit.transform.position, Color.blue, 3);
 				//}
 			}
+
+			//Fire Random Direction seemed like an issue due to collisions
+			//self.gameObject.GetComponent<ShootProjectile>().Shoot(MovingObject.GetRandomDirection());
 			self.transform.GetComponent<BoxCollider2D>().enabled = true;
 
-			self.MoveTowardPlayer();
 		}
-    }
+	}
 }

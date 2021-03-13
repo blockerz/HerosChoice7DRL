@@ -6,14 +6,13 @@ namespace Lofi.Game
 {
     public class ShootProjectile : MonoBehaviour
     {
-        public Projectile projectile;
         public GameObject projectilePrefab;
 
         public void Shoot(Vector3 direction, GameObject bullet = null)
         {
-            Projectile proj = Instantiate(projectilePrefab).GetComponent<Projectile>();
-            proj.transform.position = this.transform.position + direction + new Vector3(0.5f, 0.5f, 0);
-            proj.direction = direction;
+            Projectile projectile = Instantiate(projectilePrefab).GetComponent<Projectile>();
+            projectile.transform.position = this.transform.position + direction + new Vector3(0.5f, 0.5f, 0);
+            projectile.direction = direction;
         }
 
 

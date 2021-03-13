@@ -185,7 +185,7 @@ namespace Lofi.Game
             }
 
             //CreateRandomTilesIfOpen(section, 4);
-            CreateGroveTilesIfOpen(section, MapFactory.RandomGenerator.Next(1, 5), MapFactory.RandomGenerator.Next(1, 5));
+            CreateGroveTilesIfOpen(section, MapFactory.RandomGenerator.Next(2, 8), MapFactory.RandomGenerator.Next(2, 5));
 
             for (int y = 0; y < section.Height; y++)
             {
@@ -214,7 +214,7 @@ namespace Lofi.Game
         }
 
 
-        private void CreateGroveTilesIfOpen(GameMapSection section, int width = 2, int height = 2)
+        public void CreateGroveTilesIfOpen(GameMapSection section, int width = 2, int height = 2)
         {
             if (width <= 1 || height <= 1)
                 return;
@@ -252,9 +252,9 @@ namespace Lofi.Game
 
         }
 
-        private bool CreateSingleTileIfOpen(GameMapSection section, int x, int y)
+        public bool CreateSingleTileIfOpen(GameMapSection section, int x, int y)
         {
-            if (x <= 0 || y <= 0 || x >= section.Width - 1 || y >= section.Height - 1)
+            if (x <= 1 || y <= 1 || x >= section.Width - 2 || y >= section.Height - 2)
                 return false;
 
             foreach (var neighbor in neighborsWDiagonals)

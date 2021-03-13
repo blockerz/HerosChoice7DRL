@@ -63,9 +63,11 @@ namespace Lofi.Game
 
             Vector3 mapOffset = new Vector3(overworldGameMap.Width * overworldGameMap.TileWidth, 0, 0);
 
-            dungeonGameMaps = new GameMap[dungeonSections.Count];
+            int totalDungeons = Math.Min(6, dungeonSections.Count);
 
-            for(int d = 0; d < dungeonSections.Count; d++)
+            dungeonGameMaps = new GameMap[totalDungeons];
+
+            for(int d = 0; d < totalDungeons; d++)
             {
                 Map dungeonMap = AdventurePlanner.PlanDungeon();
                 dungeonGameMaps[d] = Instantiate(GameMapPrefab, this.transform).GetComponent<GameMap>();
@@ -192,8 +194,22 @@ namespace Lofi.Game
                 yield return new WaitForSeconds(activeEnemies[i].moveTime);
             }
 
-            FixOverlappingEntities();
+            //FixOverlappingEntities();
 
+            // Hack to try to ensure that entities are being removed since I saw remanants of Pillars for some reason
+            List<Enemy> removal = new List<Enemy>();
+            foreach(var enemy in activeEnemies)
+            {
+                if(enemy.gameObject.activeSelf == false)
+                {
+                    removal.Add(enemy);
+                }
+            }
+
+            foreach(var enemy in removal)
+            {
+                activeEnemies.Remove(enemy);
+            }
             //Debug.Log("Players turn");
             playersTurn = true;
             enemiesTurn = false;

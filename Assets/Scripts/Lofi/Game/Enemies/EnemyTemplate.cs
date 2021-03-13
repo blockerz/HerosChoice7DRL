@@ -9,9 +9,9 @@ namespace Lofi.Game
         public int Health;
         public int Damage;
         public string Habitat;
-        public IEnemyBehavior Behavior;
+        public string Behavior;
 
-        public EnemyTemplate(string name, string sprite, int health, int damage, string habitat = "ALL", IEnemyBehavior behavior = null)
+        public EnemyTemplate(string name, string sprite, int health, int damage, string habitat = "ALL", string behavior = "")
         {
             Name = name;
             Sprite = sprite;

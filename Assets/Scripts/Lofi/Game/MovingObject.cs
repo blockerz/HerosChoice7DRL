@@ -1,14 +1,17 @@
 using UnityEngine;
 using System.Collections;
+using Lofi.Maps;
 
 namespace Lofi.Game
 {
 	public abstract class MovingObject : MonoBehaviour
 	{	
 		[HideInInspector]
-		public float moveTime;           
-		public LayerMask blockingLayer;         
-
+		public float moveTime;
+		[HideInInspector]
+		public LayerMask blockingLayer;
+		[HideInInspector]
+		public bool shouldRemainStationary = false;
 
 		protected BoxCollider2D boxCollider;      
 		protected Rigidbody2D rb2D;               
@@ -29,6 +32,12 @@ namespace Lofi.Game
 			new Vector2(-1,0),
 			new Vector2(-1,1)
 		};
+
+		public static Vector2 GetRandomDirection()
+        {
+			int index = MapFactory.RandomGenerator.Next(directions.Length - 1);
+			return directions[index];
+        }
 
 		protected void Awake()
 		{

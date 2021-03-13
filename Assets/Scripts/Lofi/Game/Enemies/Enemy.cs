@@ -13,7 +13,7 @@ namespace Lofi.Game
         public Map visionMap;
         GameMapSection section;
         public IEnemyBehavior enemyBehavior;
-
+        private int stunned = 0;
 
         protected override void Start()
         {
@@ -49,6 +49,13 @@ namespace Lofi.Game
                 target = GameObject.FindGameObjectWithTag("Player").transform;
             try
             {
+                if (stunned > 0)
+                {
+                    FlashColor(Color.yellow);
+                    stunned--;
+                    return true;
+                }
+
                 if (enemyBehavior == null)
                     DecideNextMove();
                 else
@@ -61,6 +68,11 @@ namespace Lofi.Game
             }
 
             return true;
+        }
+
+        public void GetStunned(int turns)
+        {
+            stunned = turns;
         }
 
         protected virtual void DecideNextMove()
@@ -108,12 +120,12 @@ namespace Lofi.Game
         {
             Debug.Log(this.name + " was killed by " + other.name);
 
-            section.RemoveEnemyFromList(this);
-
+            gameObject.SetActive(false);
             section.DropLoot(gameObject);
 
             Destroy(gameObject);
 
+            section.RemoveEnemyFromList(this);
         }
 
         public override bool Move(int xDir, int yDir, out RaycastHit2D hit)
@@ -122,7 +134,7 @@ namespace Lofi.Game
 
             GameMapSection section = GameManager.instance.ActiveSection;
             
-            if (newPos.x < section.transform.position.x || newPos.y < section.transform.position.y ||
+            if (shouldRemainStationary || newPos.x < section.transform.position.x || newPos.y < section.transform.position.y ||
                 newPos.x >= section.transform.position.x + section.Width || newPos.y >= section.transform.position.y + section.Height)
             {
                 hit = new RaycastHit2D();

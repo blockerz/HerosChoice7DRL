@@ -1,3 +1,4 @@
+using Lofi.Maps;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -69,6 +70,8 @@ namespace Lofi.Game
                 }
             }
 
+            CreateGroveTilesIfOpen(section, MapFactory.RandomGenerator.Next(2, 8), MapFactory.RandomGenerator.Next(2, 5));
+
             for (int y = 0; y < section.Height; y++)
             {
                 for (int x = 0; x < section.Width; x++)
@@ -96,10 +99,33 @@ namespace Lofi.Game
                             tile.GetComponent<SpriteRenderer>().sprite = GetDefaultTileSpriteForIndex(DungeonDefaultFileIndex.Wall_U);
                             tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor();
                         }
+                        else if (x !=0 && y != 0 && x != section.Width-1 && y != section.Height-1)
+                        {
+                            tile.GetComponent<SpriteRenderer>().sprite = GetDefaultTileSpriteForIndex(DungeonDefaultFileIndex.SingleWall);
+                            tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor();
+                        }
                     }
                 }
             }
         }
+
+        //private void CreateGroveTilesIfOpen(GameMapSection section, int width = 2, int height = 2)
+        //{
+        //    if (width <= 1 || height <= 1)
+        //        return;
+
+        //    int xpos = MapFactory.RandomGenerator.Next(1, section.Width - 2 - (width));
+        //    int ypos = MapFactory.RandomGenerator.Next(1, section.Height - 2 - (height));
+
+        //    for (int y = ypos; y < ypos + height * 2; y += 2)
+        //    {
+        //        for (int x = xpos; x < xpos + width * 2; x += 2)
+        //        {
+        //            CreateSingleTileIfOpen(section, x, y);
+        //        }
+        //    }
+
+        //}
 
         public virtual Sprite GetDefaultTileSpriteForIndex(DungeonDefaultFileIndex index)
         {
