@@ -141,6 +141,8 @@ namespace Lofi.Game
                 furthestSection = null;
                 furthest = 0;
 
+                int middle = startRegion.sections.Count / 2;
+
                 foreach (var section in startRegion.sections)
                 {
                     int distance = (int)map.pathFromEndSection.DistanceTo(section.SectionID);
@@ -148,6 +150,11 @@ namespace Lofi.Game
                     {
                         furthestSection = section;
                         furthest = distance;
+                    }
+                    middle--;
+                    if(middle == 0)
+                    {
+                        map.treasureSection = section;
                     }
                 }
 

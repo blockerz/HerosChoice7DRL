@@ -18,9 +18,9 @@ namespace Lofi.Game
         protected override void Start()
         {
             base.Start();
-            Health = 2;
-            MaxHealth = 2;
-            Damage = 1;
+            //Health = 2;
+            //MaxHealth = 2;
+            //Damage = 1;
         }
 
         public virtual void UpdateVisionMap()
@@ -120,14 +120,39 @@ namespace Lofi.Game
         {
             Debug.Log(this.name + " was killed by " + other.name);
 
-            gameObject.SetActive(false);
-            section.DropLoot(gameObject);
+            if (this.name.ToUpper().Contains("BOSS"))
+                GameManager.instance.BossBeaten();
 
-            Destroy(gameObject);
+            var dp = Instantiate(Resources.Load<GameObject>("Prefabs/Enemies/DeathParticle"), section.transform);
+            dp.transform.position = gameObject.transform.position;
+
+            section.DropLoot(gameObject);
+            gameObject.SetActive(false);
+
+            Destroy(gameObject, 0.1f);
 
             section.RemoveEnemyFromList(this);
         }
 
+        public bool Knockback(int x, int y)
+        {
+            if (this.name.ToUpper().Contains("BOSS"))
+                return false;
+
+            if (Health > 0)
+            {
+                RaycastHit2D hit;
+
+                bool canMove = Move(x, y, out hit);
+
+                if (hit.transform == null)
+                {
+                    Debug.Log(this.name + " knocked back.");
+                    return true;
+                }
+            }
+            return false;
+        }
         public override bool Move(int xDir, int yDir, out RaycastHit2D hit)
         {
             Vector3 newPos = transform.position + new Vector3(xDir, yDir);

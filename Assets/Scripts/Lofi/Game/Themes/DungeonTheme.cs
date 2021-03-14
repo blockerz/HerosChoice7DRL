@@ -34,12 +34,39 @@ namespace Lofi.Game
             return Resources.Load<Sprite>(SpriteDirectory + "/" + ThemeName + "/" + "DungeonTemplate1");
         }
 
-        public override Color GetBackgroundSpriteColor()
+        public override Color GetBackgroundSpriteColor(int dungeonNumber)
         {
+            switch(dungeonNumber)
+            {
+                case 0:
+                    {
+                        return new Color(162 / 255f, 186 / 255f, 255 / 255f);
+                    }
+                case 1:
+                    {
+                        return new Color(56 / 255f, 105 / 255f, 0 / 255f);
+                    }
+                case 2:
+                    {
+                        return new Color(138 / 255f, 138 / 255f, 0 / 255f);
+                    }
+                case 3:
+                    {
+                        return new Color(195 / 255f, 113 / 255f, 0 / 255f);
+                    }
+                case 4:
+                    {
+                        return new Color(162 / 255f, 113 / 255f, 255 / 255f);
+                    }
+                case 5:
+                    {
+                        return new Color(178 / 255f, 178 / 255f, 178 / 255f);
+                    }
+            }
             return new Color(162/255f, 186/255f, 255/255f);
         }
 
-        public override void FillSectionTiles(GameMapSection section)
+        public override void FillSectionTiles(GameMapSection section, int dungeonNumber)
         {
 
             SetTilingZones(section);
@@ -82,27 +109,27 @@ namespace Lofi.Game
                         if (x == 0 && y == 5)
                         {
                             tile.GetComponent<SpriteRenderer>().sprite = GetDefaultTileSpriteForIndex(DungeonDefaultFileIndex.Wall_L);
-                            tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor();
+                            tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor(dungeonNumber);
                         }
                         else if (x == 16 && y == 5)
                         {
                             tile.GetComponent<SpriteRenderer>().sprite = GetDefaultTileSpriteForIndex(DungeonDefaultFileIndex.Wall_R);
-                            tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor();
+                            tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor(dungeonNumber);
                         }
                         else if (x == 8 && y == 0)
                         {
                             tile.GetComponent<SpriteRenderer>().sprite = GetDefaultTileSpriteForIndex(DungeonDefaultFileIndex.Wall_D);
-                            tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor();
+                            tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor(dungeonNumber);
                         }
                         else if (x == 8 && y == 10)
                         {
                             tile.GetComponent<SpriteRenderer>().sprite = GetDefaultTileSpriteForIndex(DungeonDefaultFileIndex.Wall_U);
-                            tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor();
+                            tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor(dungeonNumber);
                         }
                         else if (x !=0 && y != 0 && x != section.Width-1 && y != section.Height-1)
                         {
                             tile.GetComponent<SpriteRenderer>().sprite = GetDefaultTileSpriteForIndex(DungeonDefaultFileIndex.SingleWall);
-                            tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor();
+                            tile.GetComponent<SpriteRenderer>().color = GetBackgroundSpriteColor(dungeonNumber);
                         }
                     }
                 }

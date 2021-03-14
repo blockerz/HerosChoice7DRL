@@ -11,11 +11,15 @@ namespace Lofi.Game
         private SpriteRenderer swordRenderer;
         private Animator animator;
         public Sprite[] SwordSprites;
+        
         private SwordAnimator swordAnimator;
         private ThrowBoomerang throwBoomerang;
         private ShootArrow shootArrow;
+        private DropBomb dropBomb;
         public List<IUseItem> items;
         public int activeItem = 0;
+
+        public int Gems = 0;
 
         int lastMoveHorizontal = 0;
         int lastMoveVertical = 0;
@@ -36,21 +40,44 @@ namespace Lofi.Game
             swordAnimator = transform.Find("Sword").gameObject.GetComponent<SwordAnimator>();
             throwBoomerang = transform.gameObject.GetComponent<ThrowBoomerang>();
             shootArrow = transform.gameObject.GetComponent<ShootArrow>();
+            dropBomb = transform.gameObject.GetComponent<DropBomb>();
             animator = GetComponent<Animator>();
             swordRenderer.sprite = SwordSprites[0];
             swordAnimator.gameObject.SetActive(false);
 
-            items = new List<IUseItem>();
+            items = new List<IUseItem>();                                  
+
+        }
+
+        public void ActivateBow()
+        {
+            if (items.Contains(shootArrow))
+                return;
 
             items.Add(shootArrow);
-            items.Add(throwBoomerang);
+        }
+        
+        public void ActivateBoomerang()
+        {
+            if (items.Contains(throwBoomerang))
+                return;
 
+            items.Add(throwBoomerang);
+        }        
+        
+        public void ActivateBomb()
+        {
+            if (items.Contains(dropBomb))
+                return;
+
+            items.Add(dropBomb);
         }
 
         // Update is called once per frame
         void Update()
         {
             if (!GameManager.instance.playersTurn) return;
+            if (GameManager.instance.messageDisplayed) return;
 
             if (isMoving) return;
 
@@ -59,8 +86,8 @@ namespace Lofi.Game
 
             if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.W))
             {
-                items[activeItem].UseItemWithDirection(new Vector3(0, 1f, 0));
-                EndTurn();
+                if (items.Count > 0 && items[activeItem].UseItemWithDirection(new Vector3(0, 1f, 0)))
+                    EndTurn();
             }
             else if (Input.GetKey(KeyCode.W))
             {
@@ -69,8 +96,8 @@ namespace Lofi.Game
             }
             else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.A))
             {
-                items[activeItem].UseItemWithDirection(new Vector3(-1f, 0, 0));
-                EndTurn();
+                if (items.Count > 0 && items[activeItem].UseItemWithDirection(new Vector3(-1f, 0, 0)))
+                    EndTurn();
             }
             else if (Input.GetKey(KeyCode.A))
             {
@@ -79,8 +106,8 @@ namespace Lofi.Game
             }
             else if (Input.GetKey(KeyCode.LeftShift) && (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.X)))
             {
-                items[activeItem].UseItemWithDirection(new Vector3(0, -1f, 0));
-                EndTurn();
+                if (items.Count > 0 && items[activeItem].UseItemWithDirection(new Vector3(0, -1f, 0)))
+                    EndTurn();
             }
             else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.X))
             {
@@ -89,8 +116,8 @@ namespace Lofi.Game
             }
             else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.D))
             {
-                items[activeItem].UseItemWithDirection(new Vector3(1f, 0, 0));
-                EndTurn();
+                if (items.Count > 0 && items[activeItem].UseItemWithDirection(new Vector3(1f, 0, 0)))
+                    EndTurn();
             }
             else if (Input.GetKey(KeyCode.D))
             {
@@ -99,8 +126,8 @@ namespace Lofi.Game
             }
             else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.Q))
             {
-                items[activeItem].UseItemWithDirection(new Vector3(-1f, 1, 0));
-                EndTurn();
+                if (items.Count > 0 && items[activeItem].UseItemWithDirection(new Vector3(-1f, 1, 0)))
+                    EndTurn();
             }
             else if (Input.GetKey(KeyCode.Q))
             {
@@ -110,8 +137,8 @@ namespace Lofi.Game
             }
             else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.Z))
             {
-                items[activeItem].UseItemWithDirection(new Vector3(-1f, -1f, 0));
-                EndTurn();
+                if (items.Count > 0 && items[activeItem].UseItemWithDirection(new Vector3(-1f, -1f, 0)))
+                    EndTurn();
             }
             else if (Input.GetKey(KeyCode.Z))
             {
@@ -121,8 +148,8 @@ namespace Lofi.Game
             }
             else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.C))
             {
-                items[activeItem].UseItemWithDirection(new Vector3(1f, -1f, 0));
-                EndTurn();
+                if (items.Count > 0 && items[activeItem].UseItemWithDirection(new Vector3(1f, -1f, 0)))
+                    EndTurn();
             }
             else if (Input.GetKey(KeyCode.C))
             {
@@ -132,8 +159,8 @@ namespace Lofi.Game
             }
             else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.E))
             {
-                items[activeItem].UseItemWithDirection(new Vector3(1f, 1, 0));
-                EndTurn();
+                if(items.Count > 0 && items[activeItem].UseItemWithDirection(new Vector3(1f, 1, 0)))
+                    EndTurn();
             }
             else if (Input.GetKey(KeyCode.E))
             {
@@ -141,14 +168,39 @@ namespace Lofi.Game
                 vertical = 1;
                 swordRenderer.sprite = SwordSprites[4];
             }
-            else if (Input.GetKey(KeyCode.Space))
+            else if (Input.GetKeyDown(KeyCode.Space))
             {
                 EndTurn();
             }
-            else if (Input.GetKey(KeyCode.B))
+            else if (Input.GetKeyDown(KeyCode.B))
             {
-                activeItem = (activeItem + 1) % (items.Count);
-            }
+                if (items.Count > 0)
+                    activeItem = (activeItem + 1) % (items.Count);
+            }            
+            //else if (Input.GetKeyDown(KeyCode.Alpha5))
+            //{
+            //    MaxHealth += 1;
+            //}
+            //else if (Input.GetKeyDown(KeyCode.Alpha6))
+            //{
+            //    AddHealth(1);
+            //}
+            //else if (Input.GetKeyDown(KeyCode.UpArrow))
+            //{                
+            //    transform.position = transform.position + new Vector3(0, 11, transform.position.z);
+            //}
+            //else if (Input.GetKeyDown(KeyCode.DownArrow))
+            //{
+            //    transform.position = transform.position + new Vector3(0, -11, transform.position.z);
+            //}
+            //else if (Input.GetKeyDown(KeyCode.LeftArrow))
+            //{
+            //    transform.position = transform.position + new Vector3(-17, 0, transform.position.z);
+            //}
+            //else if (Input.GetKeyDown(KeyCode.RightArrow))
+            //{
+            //    transform.position = transform.position + new Vector3(17, 0, transform.position.z);
+            //}
 
             if (horizontal != 0 || vertical != 0)
             {
@@ -185,12 +237,8 @@ namespace Lofi.Game
                     swordAnimator.AnimateSword(new Vector3(lastMoveHorizontal, lastMoveVertical, 0));
                     enemy.ReceiveIncomingDamage(gameObject, Damage);
 
-                    RaycastHit2D hit;
+                    enemy.Knockback(lastMoveHorizontal, lastMoveVertical);
 
-                    bool canMove = enemy.Move(lastMoveHorizontal, lastMoveVertical, out hit);
-
-                    if (hit.transform == null)
-                        Debug.Log(this.name + " knocked back " + other.name);
                 }
             }
         }
@@ -231,6 +279,7 @@ namespace Lofi.Game
         protected override void OnDeath(GameObject other)
         {
             Debug.Log(this.name + " was killed by " + other.name);
+            GameManager.instance.GameOver = true;
         }
     }
 

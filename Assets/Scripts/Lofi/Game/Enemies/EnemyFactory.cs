@@ -22,53 +22,54 @@ namespace Lofi.Game
             AddEnemy("Werebat", "Sprites/Enemies/Werebat", 2, 1, "ALL");
 
             //AUTUMNFOREST
-            AddEnemy("Druid", "Sprites/Enemies/Druid", 2, 1, "AutumnForest");
+            AddEnemy("Druid", "Sprites/Enemies/Druid", 3, 1, "AutumnForest");
             AddEnemy("Motheran", "Sprites/Enemies/Motheran", 2, 1, "AutumnForest");
 
             //BEACH
-            AddEnemy("TwoLegs", "Sprites/Enemies/TwoLegs", 2, 1, "Beach");
+            AddEnemy("TwoLegs", "Sprites/Enemies/TwoLegs", 2, 2, "Beach");
             AddEnemy("Frogman", "Sprites/Enemies/Frogman", 2, 1, "Beach");
 
             //BOSS
-            AddBossEnemy("Boss1", "Sprites/Enemies/Boss1", 5, 1, "Boss");
-            AddBossEnemy("Boss2", "Sprites/Enemies/Boss2", 5, 1, "Boss");
-            AddBossEnemy("Boss3", "Sprites/Enemies/Boss3", 5, 1, "Boss");
-            AddBossEnemy("Boss4", "Sprites/Enemies/Boss4", 5, 1, "Boss");
-            AddBossEnemy("Boss5", "Sprites/Enemies/Boss5", 5, 1, "Boss");
-            AddBossEnemy("Boss6", "Sprites/Enemies/Boss6", 5, 1, "Boss");
+            AddBossEnemy("Boss1", "Sprites/Enemies/Boss1", 10, 1, "Boss");
+            AddBossEnemy("Boss2", "Sprites/Enemies/Boss2", 10, 1, "Boss");
+            AddBossEnemy("Boss3", "Sprites/Enemies/Boss3", 10, 1, "Boss");
+            AddBossEnemy("Boss4", "Sprites/Enemies/Boss4", 10, 1, "Boss");
+            AddBossEnemy("Boss5", "Sprites/Enemies/Boss5", 10, 1, "Boss");
+            AddBossEnemy("Boss6", "Sprites/Enemies/Boss6", 10, 1, "Boss");
 
             //DESERT
-            AddEnemy("DarkWizard", "Sprites/Enemies/DarkWizard", 2, 1, "Desert", "RangedAttackBehavior");
+            AddEnemy("DarkWizard", "Sprites/Enemies/DarkWizard", 2, 1, "Desert");
+            AddEnemy("Spider", "Sprites/Enemies/Spider", 2, 1, "Desert");
 
             //DUNGEON
-            AddEnemy("PsyClone", "Sprites/Enemies/PsyClone", 2, 1, "Dungeon");
-            AddEnemy("PsyGem", "Sprites/Enemies/PsyGem", 2, 1, "Dungeon");
-            AddEnemy("Roborg", "Sprites/Enemies/Roborg", 2, 1, "Dungeon");
-            AddEnemy("Pillar1", "Sprites/Enemies/Pillar1", 2, 1, "Dungeon", "RangedStationaryBehavior");
-            AddEnemy("Pillar2", "Sprites/Enemies/Pillar2", 2, 1, "Dungeon", "RangedStationaryBehavior");
-            AddEnemy("Pillar3", "Sprites/Enemies/Pillar3", 2, 1, "Dungeon", "RangedStationaryBehavior");
-            AddEnemy("Pillar4", "Sprites/Enemies/Pillar4", 2, 1, "Dungeon", "RangedStationaryBehavior");
+            AddEnemy("PsyClone", "Sprites/Enemies/PsyClone", 3, 2, "Dungeon");
+            AddEnemy("PsyGem", "Sprites/Enemies/PsyGem", 2, 2, "Dungeon");
+            AddEnemy("Roborg", "Sprites/Enemies/Roborg", 3, 1, "Dungeon");
+            AddEnemy("Pillar1", "Sprites/Enemies/Pillar1", 2, 1, "Dungeon");
+            AddEnemy("Pillar2", "Sprites/Enemies/Pillar2", 2, 1, "Dungeon");
+            AddEnemy("Pillar3", "Sprites/Enemies/Pillar3", 2, 1, "Dungeon");
+            AddEnemy("Pillar4", "Sprites/Enemies/Pillar4", 2, 1, "Dungeon");
 
 
             // FOREST
             AddEnemy("Guardian", "Sprites/Enemies/Guardian", 2, 1, "Forest");
-            AddEnemy("GuardianSeer", "Sprites/Enemies/GuardianSeer", 2, 1, "Forest", "RangedAttackBehavior");
+            AddEnemy("GuardianSeer", "Sprites/Enemies/GuardianSeer", 3, 1, "Forest");
 
             //GRAVEYARD
             AddEnemy("Ghast", "Sprites/Enemies/Ghast", 2, 1, "Graveyard");
-            AddEnemy("Wraith", "Sprites/Enemies/Wraith", 2, 1, "Graveyard");
+            AddEnemy("Wraith", "Sprites/Enemies/Wraith", 2, 2, "Graveyard");
 
             //ROCKY
-            AddEnemy("Dogman", "Sprites/Enemies/Dogman", 2, 1, "Rocky");
+            AddEnemy("Dogman", "Sprites/Enemies/Dogman", 3, 1, "Rocky");
             AddEnemy("Spider", "Sprites/Enemies/Spider", 2, 1, "Rocky");
 
             //SNOW
-            AddEnemy("CatSpirit", "Sprites/Enemies/CatSpirit", 2, 1, "Snow");
+            AddEnemy("CatSpirit", "Sprites/Enemies/CatSpirit", 3, 1, "Snow");
             AddEnemy("Dogman", "Sprites/Enemies/Dogman", 2, 1, "Snow");
 
             //SWAMP
-            AddEnemy("SlimeBear", "Sprites/Enemies/SlimeBear", 2, 1, "Swamp");
-            AddEnemy("Birdman", "Sprites/Enemies/Birdman", 2, 1, "Swamp");
+            AddEnemy("SlimeBear", "Sprites/Enemies/SlimeBear", 3, 1, "Swamp");
+            AddEnemy("Birdman", "Sprites/Enemies/Birdman", 2, 2, "Swamp");
 
         }
 
@@ -103,9 +104,27 @@ namespace Lofi.Game
 
             List < EnemyTemplate > selectedEnemies = AllEnemies.FindAll(enemy => 
                 (enemy.Habitat.ToUpper().Equals(section.Theme.ThemeName.ToUpper()) 
-                || enemy.Habitat.ToUpper().Equals("ALL")));
+                || enemy.Habitat.ToUpper().Equals("ALL")
+                || (section.Theme.ThemeName.Equals("Dungeon") && enemy.Habitat.ToUpper().Equals(section.EntranceTheme.ToUpper()))));
 
             int maxEnemies = 2 + (section.difficulty / 3);
+
+
+            if (section.Theme.ThemeName.ToUpper().Equals("DUNGEON"))
+            {
+                int scale = 0;
+                if (GameManager.instance.BossesRemaining > 5)
+                    scale = 1;
+                else if (GameManager.instance.BossesRemaining >= 4)
+                    scale = 2;
+                else if (GameManager.instance.BossesRemaining >= 2)
+                    scale = 3;
+                else if (GameManager.instance.BossesRemaining >= 0)
+                    scale = 4;
+
+                maxEnemies += scale;
+            }
+
             int enemyCount = MapFactory.RandomGenerator.Next(2, maxEnemies);
 
             for (int n = 0; n < enemyCount; n++)

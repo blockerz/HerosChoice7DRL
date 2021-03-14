@@ -13,6 +13,7 @@ namespace Lofi.Game
             if (other.CompareTag("Player"))
             {
                 other.GetComponent<Player>().MaxHealth += healthAmount;
+                other.GetComponent<Player>().Health = other.GetComponent<Player>().MaxHealth;
                 healthAmount = 0;
                 Destroy(gameObject);
             }

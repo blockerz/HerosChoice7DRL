@@ -15,11 +15,15 @@ namespace Lofi.Game
         private float turnDelay = 0.2f;
 
         public static IRandom Random { get; private set; }
-        private Map overWorld;
+        public Map overWorld;
         //private Map dungeon1;
         internal bool playersTurn = true;
         internal bool enemiesTurn = false;
         internal bool initializing = true;
+        internal bool messageDisplayed = false;
+        internal bool GameOver = false;
+        internal bool GameWon = false;
+        internal int BossesRemaining = 0;
 
         public GameMapSection ActiveSection;
         public GameMapSection LastSection;
@@ -29,7 +33,7 @@ namespace Lofi.Game
         GameMap overworldGameMap;
         GameMap[] dungeonGameMaps;
         public List<Section> dungeonSections;
-
+        
 
         public int Turns { get; set; }
 
@@ -39,7 +43,7 @@ namespace Lofi.Game
                 instance = this;
             else if (instance != this)
                 Destroy(gameObject);
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
 
             Application.targetFrameRate = 60;
 
@@ -72,12 +76,13 @@ namespace Lofi.Game
                 Map dungeonMap = AdventurePlanner.PlanDungeon();
                 dungeonGameMaps[d] = Instantiate(GameMapPrefab, this.transform).GetComponent<GameMap>();
                 dungeonGameMaps[d].gameObject.name = "Dungeon "+ d + " Map";
-                dungeonGameMaps[d].CreateMap(dungeonMap, true);
+                dungeonGameMaps[d].CreateMap(dungeonMap, true, d);
                 dungeonGameMaps[d].gameObject.transform.position = overworldGameMap.transform.position + mapOffset;
                 mapOffset = mapOffset + new Vector3(dungeonGameMaps[d].Width * dungeonGameMaps[d].TileWidth, 0, 0);
 
                 var entranceSection = overworldGameMap.mapSections[dungeonSections[d].OriginX, dungeonSections[d].OriginY];
                 entranceSection.ClearArea(7, 4, 3, 3);
+                dungeonGameMaps[d].SetEntranceTheme(entranceSection.Theme.ThemeName);
                 var entranceGo = Instantiate(entrancePrefab, entranceSection.transform);
                 entranceSection.AddGameObject(7, 5, entranceGo);
 
@@ -94,10 +99,20 @@ namespace Lofi.Game
                 exitGo = Instantiate(exitPrefab, exitSection.transform);
                 exitSection.AddGameObject(1, 1, exitGo);
                 exitGo.GetComponent<WarpPoint>().warpPoint = new Vector2(entranceGo.transform.position.x + 1, entranceGo.transform.position.y - 1);
+
+
             }
                 
 
 
+        }
+
+        internal void BossBeaten()
+        {
+            BossesRemaining--;
+
+            if (BossesRemaining <= 0)
+                GameWon = true;
         }
 
         // Start is called before the first frame update
@@ -123,12 +138,9 @@ namespace Lofi.Game
         // Update is called once per frame
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.P))
-            {
 
-            }
 
-            if (playersTurn || enemiesTurn || initializing)
+            if (playersTurn || enemiesTurn || initializing || messageDisplayed)
                 return;
 
             StartCoroutine(MoveEnemies());

@@ -15,6 +15,13 @@ namespace Lofi.Game
 
         public bool UseItemWithDirection(Vector3 direction)
         {
+            var player = GetComponent<Player>();
+
+            if (player.Gems <= 0)
+                return false;
+
+            player.Gems--;
+
             BowAndArrow arrow = Instantiate(arrowPrefab).GetComponent<BowAndArrow>();
             arrow.transform.position = this.transform.position + direction + new Vector3(0.5f, 0.5f, 0);
             arrow.transform.rotation = Quaternion.Euler(Vector3.forward * GetDegrees(direction));

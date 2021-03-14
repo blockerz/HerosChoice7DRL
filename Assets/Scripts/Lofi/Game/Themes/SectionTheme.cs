@@ -87,7 +87,7 @@ namespace Lofi.Game
             return GetDefaultTileSpriteForIndex(SectionTheme.DefaultFileIndex.Background);
         }
 
-        public virtual Color GetBackgroundSpriteColor()
+        public virtual Color GetBackgroundSpriteColor(int dungeonNumber = 0)
         {
             return Color.white;
         }
@@ -152,7 +152,7 @@ namespace Lofi.Game
             }
         }
 
-        public virtual void FillSectionTiles(GameMapSection section)
+        public virtual void FillSectionTiles(GameMapSection section, int dungeonNumber = 0)
         {
             bool fillClosedEdges = false;
 

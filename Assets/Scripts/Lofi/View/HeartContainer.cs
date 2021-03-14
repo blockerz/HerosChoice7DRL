@@ -24,7 +24,7 @@ namespace Lofi.Game
         // Update is called once per frame
         void Update()
         {
-            if(GameManager.instance.player != null)
+            if(GameManager.instance != null && GameManager.instance.player != null)
             {
                 int newHealth = GameManager.instance.player.GetComponent<Player>().Health;
 

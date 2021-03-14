@@ -17,5 +17,10 @@ namespace Lofi.Game
                 Destroy(gameObject);
             }
         }
+
+        private void OnBecameInvisible()
+        {
+            Destroy(gameObject);
+        }
     }
 }

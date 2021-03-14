@@ -176,6 +176,7 @@ GameObject:
   - component: {fileID: 5157613121172868856}
   - component: {fileID: 8515563701993733512}
   - component: {fileID: 2882027916133441363}
+  - component: {fileID: 8494015141048443888}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -271,6 +272,7 @@ MonoBehaviour:
   isMoving: 0
   renderer: {fileID: 0}
   SwordSprites: []
+  activeItem: 0
 --- !u!61 &5157613121172868859
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -363,6 +365,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   arrowPrefab: {fileID: 0}
+--- !u!114 &8494015141048443888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5157613121172868862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bbd5af6f42e7e34a8d93aabfeada6aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bombPrefab: {fileID: 0}
 --- !u!1 &7068569461537555768
 GameObject:
   m_ObjectHideFlags: 0

@@ -23,6 +23,7 @@ namespace Lofi.Maps
         public EdgeWeightedDigraph sectionGraph;
         public EdgeWeightedDigraph regionGraph;
         public List<int> regionCriticalPath;
+        public Section treasureSection;
         public Section startSection;
         public Section endSection;
         public DijkstraShortestPath pathFromStartSection;

@@ -126,7 +126,8 @@ namespace Lofi.Game
 
 		public void ReceiveIncomingDamage(GameObject other, int damage)
         {
-			Health -= damage;
+			if(Health > 0)
+				Health -= damage;
 			FlashColor(Color.red);
 
 			if (Health <= 0)

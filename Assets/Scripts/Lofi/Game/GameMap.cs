@@ -14,6 +14,7 @@ namespace Lofi.Game
 
         public int TileWidth { get; set; }
         public int TileHeight { get; set; }
+        public string EntranceTheme { get; internal set; }
 
         internal GameMapSection[,] mapSections;
         GameObject mapSectionPrefab;
@@ -66,7 +67,7 @@ namespace Lofi.Game
             }
         }
 
-        public void CreateMap(Map map, bool dungeon = false)
+        public void CreateMap(Map map, bool dungeon = false, int dungeonNumber = 0)
         {
             this.map = map;
             Width = map.SectionWidth;
@@ -83,10 +84,12 @@ namespace Lofi.Game
                     mapSection.name = "Section: " + x + ", " + y;
                     mapSection.Section = map.GetSection(x, y);
                     mapSection.transform.position = new Vector3(x * TileWidth, y * TileHeight, 0);
-   
+                    mapSection.mapX = x;
+                    mapSection.mapY = y;
+
 
                     if(dungeon)
-                        mapSection.Initialize(TileWidth, TileHeight, themes.GetThemeForDungeon(mapSection.Section));
+                        mapSection.Initialize(TileWidth, TileHeight, themes.GetThemeForDungeon(mapSection.Section), dungeonNumber);
                     else
                         mapSection.Initialize(TileWidth, TileHeight, themes.GetThemeForRegion(mapSection.Section));
                     //mapSection.gameObject.SetActive(false);
@@ -98,11 +101,33 @@ namespace Lofi.Game
                     {
                         EnemyFactory.GetBossEnemy(mapSection);
                         mapSection.preventEnemySpawns = true;
+                        GameManager.instance.BossesRemaining++;
                     }
+
+                    if (dungeon && mapSection.Section.SectionID == map.treasureSection.SectionID)
+                    {
+                        // Place Items
+                        var randTile = mapSection.GetRandomOpenTile();
+                        var position = mapSection.transform.position + randTile + new Vector3(0.5f, 0.5f, 0);
+                        LootFactory.GetTreasureForDungeon(gameObject, position);
+
+                    }
+
 
                     // Make 0 tiles bllack to distinguish in editor
                     if (mapSection.Section.TileID == 0)
                         mapSection.gameObject.GetComponentInChildren<SpriteRenderer>().color = Color.black;
+                }
+            }
+        }
+
+        internal void SetEntranceTheme(string themeName)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    mapSections[x, y].EntranceTheme = themeName;
                 }
             }
         }

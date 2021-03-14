@@ -15,6 +15,7 @@ namespace Lofi.Game
         public int Height { get; set; }
         public SectionTheme Theme { get; set; }
         public Section Section { get; set; }
+        public string EntranceTheme { get; internal set; }
 
         private BoxCollider2D activator;
         private SpriteRenderer background;
@@ -25,6 +26,9 @@ namespace Lofi.Game
         public int difficulty = 0;
         public int turnLastVisited = 0;
 
+        public int mapX;
+        public int mapY;
+
         private void Awake()
         {
             activator = GetComponentInChildren<BoxCollider2D>();
@@ -33,7 +37,7 @@ namespace Lofi.Game
             layerMask = LayerMask.GetMask("Blocking");
         }
 
-        public void Initialize(int width, int height, SectionTheme theme)
+        public void Initialize(int width, int height, SectionTheme theme, int dungeonNumber = 0)
         {
             Width = width;
             Height = height;
@@ -44,13 +48,13 @@ namespace Lofi.Game
             //activator.transform.parent = transform;
             //background.transform.parent = transform;
             background.sprite = theme.GetBackgroundSprite();
-            background.color = theme.GetBackgroundSpriteColor();
+            background.color = theme.GetBackgroundSpriteColor(dungeonNumber);
             if (!theme.ThemeName.Equals("Dungeon"))  
                 background.transform.localScale = new Vector3(width, height, 0);
             //background.transform.position = new Vector3(0, 0, 0);
 
             tiles = new GameObject[width, height];
-            theme.FillSectionTiles(this);
+            theme.FillSectionTiles(this, dungeonNumber);
             turnLastVisited = 0;
         }
 
@@ -157,7 +161,7 @@ namespace Lofi.Game
 
         internal void DropLoot(GameObject source)
         {
-            LootFactory.GetLootForTheme(Theme.name, gameObject, source.transform.position);
+            LootFactory.GetLootForTheme(Theme.ThemeName, gameObject, source.transform.position);
         }
 
         private void GenerateMonsters()
